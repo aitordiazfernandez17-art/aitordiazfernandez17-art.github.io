@@ -1,217 +1,397 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-    <!-- Verificación de propiedad de Google Search Console -->
-    <meta name="google-site-verification" content="">
-    <title>Política de Cookies — GeoAtlas</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="">
+  <title>Política de Cookies — GeoAtlas</title>
 
-    <!-- Google Analytics 4 (G-E2J7E7R84C) con soporte de consentimiento previo -->
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('consent', 'default', {
-            'analytics_storage': localStorage.getItem('geoatlas_consent_analytics') === 'denied' ? 'denied' : 'granted'
-        });
-        gtag('js', new Date());
-        gtag('config', 'G-E2J7E7R84C');
-    </script>
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-E2J7E7R84C"></script>
+  <!-- Google Consent Mode v2 + GA4 -->
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    var savedConsent = null;
+    try { savedConsent = localStorage.getItem('geoatlas_consent_v1'); } catch (e) {}
 
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Tipografía Inter -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    gtag('consent', 'default', {
+      'analytics_storage': savedConsent === 'granted' ? 'granted' : 'denied',
+      'ad_storage': 'denied',
+      'ad_user_data': 'denied',
+      'ad_personalization': 'denied',
+      'wait_for_update': 500
+    });
+    gtag('js', new Date());
+    gtag('config', 'G-E2J7E7R84C', { 'anonymize_ip': true });
+  </script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-E2J7E7R84C"></script>
 
-    <style>
-        body {
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
-            background-color: #f8fafc;
-            color: #0f172a;
-        }
-    </style>
+  <style>
+    :root {
+      --bg: #f4f7fb;
+      --surface: #ffffff;
+      --surface-soft: #eef3fa;
+      --primary: #1d4ed8;
+      --primary-hover: #1e40af;
+      --accent: #0ea5e9;
+      --success: #16a34a;
+      --success-bg: #dcfce7;
+      --text: #0f172a;
+      --text-muted: #475569;
+      --border: #cbd5e1;
+      --warn-bg: #fef9c3;
+      --warn-border: #facc15;
+      --warn-text: #854d0e;
+      --shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08);
+      --radius: 14px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0.85rem 1.25rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      text-decoration: none;
+      color: var(--text);
+      font-weight: 800;
+      font-size: 1.3rem;
+    }
+
+    .brand-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: #fff;
+      display: grid;
+      place-items: center;
+    }
+
+    .nav-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 0.94rem;
+      padding: 0.45rem 0.85rem;
+      border-radius: 999px;
+    }
+
+    .nav-links a:hover {
+      background: var(--surface-soft);
+      color: var(--primary);
+    }
+
+    main {
+      flex: 1;
+      max-width: 900px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 3rem;
+    }
+
+    .legal-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 2rem;
+      box-shadow: var(--shadow);
+    }
+
+    h1 {
+      font-size: clamp(1.6rem, 3vw, 2.2rem);
+      margin-bottom: 0.5rem;
+    }
+
+    .subtitle {
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+      font-size: 0.95rem;
+    }
+
+    .consent-box {
+      background: var(--surface-soft);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem;
+      margin: 1.25rem 0 1.75rem;
+    }
+
+    .consent-status {
+      font-weight: 700;
+      margin-bottom: 0.85rem;
+      color: var(--text);
+    }
+
+    .consent-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .btn-accept {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 9px;
+      padding: 0.6rem 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .btn-accept:hover { background: var(--primary-hover); }
+
+    .btn-reject {
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      padding: 0.6rem 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .btn-reject:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0 1.5rem;
+      font-size: 0.92rem;
+    }
+
+    th, td {
+      border: 1px solid var(--border);
+      padding: 0.7rem 0.85rem;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: var(--surface-soft);
+      font-weight: 700;
+    }
+
+    .review-notice {
+      background: var(--warn-bg);
+      border: 1px solid var(--warn-border);
+      color: var(--warn-text);
+      border-radius: 10px;
+      padding: 0.95rem 1.1rem;
+      margin-bottom: 1.5rem;
+      font-size: 0.92rem;
+    }
+
+    h2 {
+      font-size: 1.25rem;
+      color: var(--primary);
+      margin: 1.65rem 0 0.6rem;
+    }
+
+    p { margin-bottom: 0.85rem; }
+
+    ul { margin: 0.5rem 0 1rem 1.4rem; }
+    li { margin-bottom: 0.4rem; }
+
+    footer {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 1.5rem 1.25rem;
+    }
+
+    .footer-container {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    .footer-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .footer-links a {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .footer-links a:hover { text-decoration: underline; }
+  </style>
 </head>
-<body class="min-h-screen flex flex-col">
+<body>
 
-    <!-- BARRA DE NAVEGACIÓN SUPERIOR -->
-    <header class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-slate-200 shadow-sm">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex flex-wrap items-center justify-between min-h-[64px] py-2 gap-2">
-                <a href="index.html" class="flex items-center gap-2.5 text-left group focus:outline-none">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-sky-700 to-blue-900 flex items-center justify-center text-white shadow-sm group-hover:scale-105 transition-transform">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <circle cx="12" cy="12" r="10"></circle>
-                            <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
-                        </svg>
-                    </div>
-                    <div>
-                        <span class="text-xl font-extrabold tracking-tight text-slate-900 block leading-none">Geo<span class="text-sky-700">Atlas</span></span>
-                        <span class="text-[11px] font-medium text-slate-500 tracking-wide">Geografía Mundial Interactiva</span>
-                    </div>
-                </a>
+  <header>
+    <div class="nav-container">
+      <a class="brand" href="index.html">
+        <span class="brand-icon" aria-hidden="true">🌍</span>
+        <span>GeoAtlas</span>
+      </a>
+      <nav class="nav-links" aria-label="Navegación principal">
+        <a href="index.html">Inicio</a>
+        <a href="index.html?modo=countries">Países del Mundo</a>
+        <a href="index.html?modo=capitals">Capitales por Continente</a>
+      </nav>
+    </div>
+  </header>
 
-                <nav class="flex items-center gap-1 sm:gap-2" aria-label="Navegación principal">
-                    <a href="index.html" class="px-3 py-2 rounded-xl text-sm font-semibold transition-colors text-slate-600 hover:bg-slate-100 hover:text-slate-900">
-                        Inicio
-                    </a>
-                    <a href="index.html?modo=countries" class="px-3 py-2 rounded-xl text-sm font-semibold transition-colors text-slate-600 hover:bg-slate-100 hover:text-slate-900">
-                        Países del Mundo
-                    </a>
-                    <a href="index.html?modo=capitals" class="px-3 py-2 rounded-xl text-sm font-semibold transition-colors text-slate-600 hover:bg-slate-100 hover:text-slate-900">
-                        Capitales por Continente
-                    </a>
-                </nav>
-            </div>
+  <main>
+    <article class="legal-card">
+      <h1>Política de Cookies</h1>
+      <p class="subtitle">Información transparente sobre las cookies y tecnologías de almacenamiento utilizadas en <strong>GeoAtlas</strong>.</p>
+
+      <div class="review-notice">
+        <strong>Nota de verificación:</strong> Esta política refleja únicamente las tecnologías implementadas actualmente en el código de GeoAtlas. Si en el futuro se incorporan nuevas herramientas o servicios publicitarios, deberá actualizarse antes de su activación.
+      </div>
+
+      <h2>1. ¿Qué son las cookies y tecnologías similares?</h2>
+      <p>Las cookies son pequeños archivos de texto que los sitios web pueden almacenar en el navegador del usuario para recordar preferencias técnicas o recopilar información estadística sobre la navegación. De forma similar, el almacenamiento local del navegador (<code>localStorage</code>) permite guardar ajustes técnicos directamente en el dispositivo del usuario.</p>
+
+      <h2>2. Tecnologías utilizadas actualmente en GeoAtlas</h2>
+      <p>En <strong>GeoAtlas</strong> empleamos un sistema de gestión de consentimiento basado en <strong>Google Consent Mode v2</strong> que mantiene bloqueado el almacenamiento analítico hasta que el usuario toma una decisión explícita:</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Identificador / Tecnología</th>
+            <th>Tipo y titular</th>
+            <th>Finalidad</th>
+            <th>Activación</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>geoatlas_consent_v1</code> (Almacenamiento local <code>localStorage</code>)</td>
+            <td>Técnica / Propia (GeoAtlas)</td>
+            <td>Guardar la elección del usuario (aceptar o rechazar el análisis) para no mostrar repetidamente el aviso en cada página.</td>
+            <td>Necesaria tras interactuar con el aviso de cookies.</td>
+          </tr>
+          <tr>
+            <td><strong>Google Analytics 4</strong> (Propiedad <code>G-E2J7E7R84C</code>, cookies de análisis como <code>_ga</code> / <code>_ga_*</code>)</td>
+            <td>Analítica / Terceros (Google)</td>
+            <td>Obtener estadísticas agregadas sobre el uso educativo de la web (páginas visitadas, duración aproximada de la sesión y tipo de dispositivo).</td>
+            <td><strong>Solo tras consentimiento explícito.</strong> Por defecto permanece en estado <code>denied</code>.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>3. Gestionar tus preferencias o retirar el consentimiento</h2>
+      <p>Puedes cambiar tu elección o retirar tu consentimiento en cualquier momento utilizando los siguientes controles. Si rechazas el análisis, el estado se actualizará a <code>denied</code> y se eliminarán las cookies analíticas del dominio:</p>
+
+      <div class="consent-box">
+        <div class="consent-status" id="consent-status-text">Comprobando estado actual...</div>
+        <div class="consent-buttons">
+          <button type="button" class="btn-accept" onclick="updateUserConsent('granted')">Aceptar cookies de análisis</button>
+          <button type="button" class="btn-reject" onclick="updateUserConsent('denied')">Rechazar / Retirar consentimiento</button>
         </div>
-    </header>
+      </div>
 
-    <!-- CONTENIDO PRINCIPAL -->
-    <main class="flex-1 max-w-4xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
-        <!-- Aviso de revisión para el responsable -->
-        <div class="mb-6 rounded-2xl bg-amber-50 border border-amber-300 p-4 text-amber-900 text-xs sm:text-sm">
-            <p class="font-bold mb-1">Nota técnica para el responsable antes de publicar:</p>
-            <p>Esta página describe exclusivamente las tecnologías verificadas en el código actual (almacenamiento técnico local para preferencias y medición mediante Google Analytics 4 <code class="font-mono bg-amber-100 px-1 rounded">G-E2J7E7R84C</code>). Si en el futuro añades un banner o plataforma de gestión del consentimiento (CMP) certificada, conecta el estado de <code class="font-mono bg-amber-100 px-1 rounded">gtag('consent', ...)</code> con dicha herramienta y completa los campos marcados como <code class="font-mono bg-amber-100 px-1 rounded">[COMPLETAR...]</code>.</p>
-        </div>
+      <h2>4. Configuración desde tu navegador</h2>
+      <p>Además del panel anterior, puedes bloquear o eliminar cookies en cualquier momento desde las opciones de privacidad de tu navegador web (Chrome, Firefox, Safari, Edge u otros). El bloqueo de cookies analíticas no impide utilizar ninguno de los juegos educativos de GeoAtlas.</p>
+    </article>
+  </main>
 
-        <article class="bg-white rounded-3xl p-6 sm:p-10 border border-slate-200 shadow-sm space-y-6 text-slate-700 leading-relaxed">
-            <header class="border-b border-slate-100 pb-6">
-                <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-sky-100 text-sky-800 mb-3">
-                    Transparencia y Configuración
-                </span>
-                <h1 class="text-2xl sm:text-4xl font-extrabold text-slate-900 tracking-tight mb-2">
-                    Política de Cookies y Tecnologías de Medición
-                </h1>
-                <p class="text-xs sm:text-sm text-slate-500">
-                    Titular responsable: <span class="font-semibold text-amber-900 bg-amber-100 px-1.5 py-0.5 rounded">[COMPLETAR POR EL RESPONSABLE: Nombre / Razón social]</span>
-                </p>
-            </header>
+  <footer>
+    <div class="footer-container">
+      <div><strong>GeoAtlas</strong> · Juegos educativos de geografía</div>
+      <div class="footer-links">
+        <a href="index.html">Inicio</a>
+        <a href="pol_tica_de_privacidad_geoatlas.html">Política de privacidad</a>
+        <a href="pol_tica_de_cookies_geoatlas.html">Política de cookies</a>
+        <a href="contacto_geoatlas.html">Contacto</a>
+      </div>
+    </div>
+  </footer>
 
-            <section class="space-y-2">
-                <h2 class="text-lg sm:text-xl font-bold text-slate-900">1. ¿Qué son las cookies y tecnologías similares?</h2>
-                <p class="text-sm sm:text-base">
-                    Las cookies y el almacenamiento local del navegador (<code class="font-mono text-xs bg-slate-100 px-1.5 py-0.5 rounded">localStorage</code>) son pequeños archivos o registros de datos que se guardan en el dispositivo del usuario al visitar una página web. Sirven para recordar preferencias técnicas de navegación o para obtener estadísticas agregadas sobre el uso del sitio.
-                </p>
-            </section>
+  <script>
+    const CONSENT_KEY = 'geoatlas_consent_v1';
 
-            <section class="space-y-3">
-                <h2 class="text-lg sm:text-xl font-bold text-slate-900">2. Categorías utilizadas en GeoAtlas</h2>
-                <p class="text-sm sm:text-base">
-                    En la versión actual de <strong>GeoAtlas</strong> únicamente se emplean las siguientes categorías verificadas:
-                </p>
-
-                <div class="overflow-x-auto border border-slate-200 rounded-2xl">
-                    <table class="w-full text-left border-collapse text-xs sm:text-sm">
-                        <thead>
-                            <tr class="bg-slate-50 border-b border-slate-200 text-slate-900">
-                                <th class="py-3 px-4 font-bold">Categoría</th>
-                                <th class="py-3 px-4 font-bold">Proveedor / Herramienta</th>
-                                <th class="py-3 px-4 font-bold">Finalidad</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-slate-200">
-                            <tr>
-                                <td class="py-3 px-4 font-semibold text-slate-900">Técnicas / Preferencias de consentimiento</td>
-                                <td class="py-3 px-4">Propia (GeoAtlas — almacenamiento local del navegador)</td>
-                                <td class="py-3 px-4">Guardar la elección del usuario sobre el permiso o rechazo de la medición estadística (<code class="font-mono text-xs bg-slate-100 px-1 rounded">geoatlas_consent_analytics</code>).</td>
-                            </tr>
-                            <tr>
-                                <td class="py-3 px-4 font-semibold text-slate-900">Analítica y medición</td>
-                                <td class="py-3 px-4">Google Analytics 4 (ID: <code class="font-mono text-xs bg-slate-100 px-1 rounded">G-E2J7E7R84C</code>)</td>
-                                <td class="py-3 px-4">Recopilar métricas estadísticas agregadas sobre el tráfico y uso de la plataforma educativa. Los identificadores y plazos específicos dependen de la configuración activa en la cuenta de Google Analytics del responsable (<span class="font-semibold text-amber-900 bg-amber-100 px-1 rounded">[VERIFICAR PLAZOS EN PANEL DE GA4]</span>).</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-
-            <!-- PANEL DE PREFERENCIAS DE CONSENTIMIENTO (COMPATIBLE CON GOOGLE CONSENT MODE) -->
-            <section class="bg-slate-50 rounded-2xl p-5 sm:p-6 border border-slate-200 space-y-4">
-                <div>
-                    <h2 class="text-lg font-bold text-slate-900">3. Gestión de preferencias de medición estadística</h2>
-                    <p class="text-xs sm:text-sm text-slate-600 mt-1">
-                        Puedes modificar en cualquier momento tu preferencia respecto al uso de Google Analytics 4 en este navegador. Este control actualiza el estado de <code class="font-mono text-xs bg-white px-1.5 py-0.5 rounded border border-slate-200">analytics_storage</code> mediante Google Consent Mode.
-                    </p>
-                </div>
-
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
-                    <div class="text-xs sm:text-sm">
-                        <span class="font-semibold text-slate-700">Estado actual de analítica:</span>
-                        <span id="consent-status-badge" class="ml-1.5 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-sky-100 text-sky-800">
-                            Comprobando...
-                        </span>
-                    </div>
-
-                    <div class="flex flex-wrap gap-2">
-                        <button type="button" onclick="setAnalyticsConsent('granted')" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-bold shadow-sm transition-colors">
-                            Aceptar analítica
-                        </button>
-                        <button type="button" onclick="setAnalyticsConsent('denied')" class="px-4 py-2 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs sm:text-sm font-bold transition-colors">
-                            Rechazar analítica
-                        </button>
-                    </div>
-                </div>
-                <p id="consent-feedback-msg" class="hidden text-xs font-semibold text-emerald-700"></p>
-            </section>
-
-            <section class="space-y-2">
-                <h2 class="text-lg sm:text-xl font-bold text-slate-900">4. Cómo desactivar o eliminar cookies desde el navegador</h2>
-                <p class="text-sm sm:text-base">
-                    Además del panel anterior, cualquier usuario puede bloquear, restringir o eliminar las cookies y datos de sitios web desde las opciones de privacidad y seguridad de su navegador (Chrome, Firefox, Safari, Edge u otros).
-                </p>
-            </section>
-        </article>
-    </main>
-
-    <!-- PIE DE PÁGINA -->
-    <footer class="bg-white border-t border-slate-200 py-4 px-4 sm:px-6 lg:px-8 text-xs text-slate-500 mt-auto">
-        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
-            <p class="text-center sm:text-left">
-                GeoAtlas — Plataforma educativa de geografía mundial.
-            </p>
-            <nav aria-label="Enlaces legales y de contacto" class="flex flex-wrap items-center justify-center gap-x-4 gap-y-1.5 font-medium text-slate-600 shrink-0">
-                <a href="index.html" class="hover:text-sky-700 hover:underline transition-colors">Volver al mapa</a>
-                <span class="text-slate-300 select-none" aria-hidden="true">·</span>
-                <a href="privacidad.html" class="hover:text-sky-700 hover:underline transition-colors">Política de privacidad</a>
-                <span class="text-slate-300 select-none" aria-hidden="true">·</span>
-                <a href="cookies.html" class="text-sky-800 font-bold underline">Política de cookies</a>
-                <span class="text-slate-300 select-none" aria-hidden="true">·</span>
-                <a href="contacto.html" class="hover:text-sky-700 hover:underline transition-colors">Contacto</a>
-            </nav>
-        </div>
-    </footer>
-
-    <script>
-        function updateConsentUI() {
-            const current = localStorage.getItem('geoatlas_consent_analytics');
-            const badge = document.getElementById('consent-status-badge');
-            if (current === 'denied') {
-                badge.textContent = 'Rechazada (denegada)';
-                badge.className = 'ml-1.5 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-100 text-rose-800';
-            } else {
-                badge.textContent = 'Permitida';
-                badge.className = 'ml-1.5 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800';
-            }
+    function clearAnalyticsCookies() {
+      const cookies = document.cookie.split(';');
+      for (let i = 0; i < cookies.length; i++) {
+        const name = cookies[i].split('=')[0].trim();
+        if (name.startsWith('_ga') || name.startsWith('_gid')) {
+          document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+          document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.' + location.hostname + ';';
         }
+      }
+    }
 
-        function setAnalyticsConsent(decision) {
-            localStorage.setItem('geoatlas_consent_analytics', decision);
-            if (typeof gtag === 'function') {
-                gtag('consent', 'update', {
-                    'analytics_storage': decision
-                });
-            }
-            updateConsentUI();
-            const msg = document.getElementById('consent-feedback-msg');
-            msg.textContent = decision === 'granted'
-                ? 'Preferencia guardada: medición estadística activada.'
-                : 'Preferencia guardada: medición estadística desactivada en este navegador.';
-            msg.classList.remove('hidden');
-        }
+    function renderConsentStatus() {
+      let current = null;
+      try { current = localStorage.getItem(CONSENT_KEY); } catch (e) {}
+      const statusEl = document.getElementById('consent-status-text');
 
-        window.addEventListener('DOMContentLoaded', updateConsentUI);
-    </script>
+      if (current === 'granted') {
+        statusEl.textContent = 'Estado actual: Análisis ACEPTADO (Google Analytics 4 habilitado).';
+      } else if (current === 'denied') {
+        statusEl.textContent = 'Estado actual: Análisis RECHAZADO (Google Analytics 4 bloqueado).';
+      } else {
+        statusEl.textContent = 'Estado actual: Pendiente de elección (Google Analytics 4 bloqueado por defecto).';
+      }
+    }
+
+    function updateUserConsent(state) {
+      try { localStorage.setItem(CONSENT_KEY, state); } catch (e) {}
+
+      if (typeof gtag === 'function') {
+        gtag('consent', 'update', {
+          'analytics_storage': state === 'granted' ? 'granted' : 'denied',
+          'ad_storage': 'denied',
+          'ad_user_data': 'denied',
+          'ad_personalization': 'denied'
+        });
+      }
+
+      if (state !== 'granted') {
+        clearAnalyticsCookies();
+      }
+
+      renderConsentStatus();
+    }
+
+    window.addEventListener('DOMContentLoaded', renderConsentStatus);
+  </script>
 </body>
 </html>
