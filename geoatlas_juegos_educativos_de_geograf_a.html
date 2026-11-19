@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>GeoAtlas — Atlas Interactivo de Geografía Mundial</title>
+    <!-- Tailwind CSS para diseño limpio, responsivo y profesional -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tipografía Inter desde Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- D3.js (d3-geo y d3-zoom) y TopoJSON Client desde CDN confiables -->
+    <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: #f8fafc;
+            color: #0f172a;
+            overflow-x: hidden;
+        }
+
+        /* Estilos del contenedor del mapa SVG */
+        #map-wrapper {
+            background: radial-gradient(circle at center, #e0f2fe 0%, #bae6fd 100%);
+            touch-action: none; /* Permite que d3-zoom gestione gestos táctiles sin interferencia */
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .country-path {
+            fill: #f1f5f9;
+            stroke: #64748b;
+            stroke-width: 0.45px;
+            stroke-linejoin: round;
+            stroke-linecap: round;
+            transition: fill 0.18s ease, stroke 0.18s ease;
+            cursor: pointer;
+        }
+
+        /* Territorios no jugables (ej. Antártida o territorios dependientes sin soberanía plena) */
+        .country-non-playable {
+            fill: #e2e8f0;
+            stroke: #94a3b8;
+            stroke-width: 0.35px;
+            cursor: default;
+        }
+
+        /* Efecto hover en dispositivos con puntero */
+        @media (hover: hover) {
+            .country-playable:hover {
+                fill: #cbd5e1;
+                stroke: #1e293b;
+                stroke-width: 0.75px;
+            }
+        }
+
+        /* País fuera del continente seleccionado en el juego de capitales */
+        .country-dimmed {
+            fill: #e2e8f0;
+            stroke: #94a3b8;
+            opacity: 0.65;
+        }
+
+        /* Estado acertado */
+        .country-solved {
+            fill: #10b981 !important;
+            stroke: #047857 !important;
+            stroke-width: 0.65px !important;
+        }
+
+        /* Destello de error temporal */
+        .country-error {
+            fill: #f43f5e !important;
+            stroke: #be123c !important;
+            stroke-width: 0.85px !important;
+        }
+
+        /* Resaltado temporal al localizar un microestado si el usuario usa la lupa de ayuda */
+        @keyframes pulseTarget {
+            0%, 100% { fill: #f59e0b; stroke: #b45309; stroke-width: 1.4px; }
+            50% { fill: #fef08a; stroke: #d97706; stroke-width: 2px; }
+        }
+        .country-hint-pulse {
+            animation: pulseTarget 0.9s ease-in-out 2;
+        }
+
+        /* Animación suave para los mensajes de feedback */
+        @keyframes popFeedback {
+            0% { transform: scale(0.92); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .feedback-badge {
+            animation: popFeedback 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- BARRA DE NAVEGACIÓN SUPERIOR FIJA -->
+    <header class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-slate-200 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-wrap items-center justify-between min-h-[64px] py-2 gap-2">
+                <!-- Logotipo y Nombre de la Plataforma -->
+                <button onclick="navigateTo('home')" class="flex items-center gap-2.5 text-left group focus:outline-none">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-sky-700 to-blue-900 flex items-center justify-center text-white shadow-sm group-hover:scale-105 transition-transform">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <span class="text-xl font-extrabold tracking-tight text-slate-900 block leading-none">Geo<span class="text-sky-700">Atlas</span></span>
+                        <span class="text-[11px] font-medium text-slate-500 tracking-wide">Geografía Mundial Interactiva</span>
+                    </div>
+                </button>
+
+                <!-- Menú de Navegación Principal -->
+                <nav class="flex items-center gap-1 sm:gap-2" aria-label="Navegación principal">
+                    <button id="nav-home" onclick="navigateTo('home')" class="nav-btn px-3 py-2 rounded-xl text-sm font-semibold transition-colors bg-sky-50 text-sky-800">
+                        Inicio
+                    </button>
+                    <button id="nav-countries" onclick="navigateTo('countries')" class="nav-btn px-3 py-2 rounded-xl text-sm font-semibold transition-colors text-slate-600 hover:bg-slate-100 hover:text-slate-900">
+                        Países del Mundo
+                    </button>
+                    <button id="nav-capitals" onclick="navigateTo('capitals')" class="nav-btn px-3 py-2 rounded-xl text-sm font-semibold transition-colors text-slate-600 hover:bg-slate-100 hover:text-slate-900">
+                        Capitales por Continente
+                    </button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="flex-1 flex flex-col">
+
+        <!-- ========================================================= -->
+        <!-- VISTA 1: PÁGINA PRINCIPAL (INICIO)                        -->
+        <!-- ========================================================= -->
+        <section id="view-home" class="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-14 flex flex-col justify-center">
+            <div class="text-center max-w-3xl mx-auto mb-10 sm:mb-14">
+                <span class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-sky-100 text-sky-800 mb-4">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
+                    Plataforma Educativa de Cartografía
+                </span>
+                <h1 class="text-3xl sm:text-5xl font-extrabold text-slate-900 tracking-tight mb-4">
+                    Explora y domina la geografía del mundo con <span class="text-sky-700">GeoAtlas</span>
+                </h1>
+                <p class="text-base sm:text-lg text-slate-600 leading-relaxed">
+                    Aprende a ubicar cada país y reconocer todas las capitales de los seis continentes directamente sobre un mapamundi interactivo con zoom de alta precisión. Sin prisas ni distracciones: selecciona un modo de juego para comenzar.
+                </p>
+            </div>
+
+            <!-- Tarjetas de Acceso Directo a los Dos Juegos -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 max-w-5xl mx-auto w-full">
+                <!-- Tarjeta Juego 1: Países del Mundo -->
+                <div onclick="navigateTo('countries')" role="button" tabindex="0" class="group bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm hover:shadow-xl hover:border-sky-300 transition-all cursor-pointer flex flex-col justify-between">
+                    <div>
+                        <div class="w-14 h-14 rounded-2xl bg-sky-100 text-sky-700 flex items-center justify-center mb-6 group-hover:bg-sky-700 group-hover:text-white transition-colors">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                        </div>
+                        <h2 class="text-2xl font-bold text-slate-900 mb-3 group-hover:text-sky-800 transition-colors">
+                            1. Países del Mundo
+                        </h2>
+                        <p class="text-slate-600 text-sm sm:text-base leading-relaxed mb-6">
+                            Recorre el globo terráqueo completo. El sistema te indicará el nombre de un país y deberás localizar su territorio pulsando directamente sobre él en el mapa mundial hasta completar todos los países sin repeticiones.
+                        </p>
+                    </div>
+                    <div class="flex items-center justify-between pt-4 border-t border-slate-100">
+                        <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">Todos los países soberanos</span>
+                        <span class="inline-flex items-center gap-1.5 text-sm font-bold text-sky-700 group-hover:translate-x-1 transition-transform">
+                            Jugar ahora
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Tarjeta Juego 2: Capitales por Continente -->
+                <div onclick="navigateTo('capitals')" role="button" tabindex="0" class="group bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm hover:shadow-xl hover:border-emerald-300 transition-all cursor-pointer flex flex-col justify-between">
+                    <div>
+                        <div class="w-14 h-14 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center mb-6 group-hover:bg-emerald-700 group-hover:text-white transition-colors">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            </svg>
+                        </div>
+                        <h2 class="text-2xl font-bold text-slate-900 mb-3 group-hover:text-emerald-800 transition-colors">
+                            2. Capitales por Continente
+                        </h2>
+                        <p class="text-slate-600 text-sm sm:text-base leading-relaxed mb-6">
+                            Elige entre Europa, Asia, África, América del Norte, América del Sur u Oceanía. Aparecerá el nombre de una ciudad capital y tendrás que pulsar en el mapa el país al que pertenece.
+                        </p>
+                    </div>
+                    <div class="flex items-center justify-between pt-4 border-t border-slate-100">
+                        <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">6 continentes disponibles</span>
+                        <span class="inline-flex items-center gap-1.5 text-sm font-bold text-emerald-700 group-hover:translate-x-1 transition-transform">
+                            Elegir continente
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================================= -->
+        <!-- VISTA 2: ÁREA DE JUEGO INTERACTIVA (COMÚN A AMBOS MODOS)  -->
+        <!-- ========================================================= -->
+        <section id="view-game" class="hidden flex-1 flex flex-col max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-5 gap-3 sm:gap-4">
+
+            <!-- SELECTOR DE CONTINENTE (Visible solo en modo Capitales) -->
+            <div id="continent-selector-bar" class="hidden bg-white rounded-2xl p-3 sm:p-4 border border-slate-200 shadow-sm">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2.5">
+                    <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Selecciona un continente:</span>
+                    <span id="continent-count-info" class="text-xs font-medium text-slate-500"></span>
+                </div>
+                <div id="continent-buttons" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
+                    <!-- Botones generados dinámicamente -->
+                </div>
+            </div>
+
+            <!-- PANEL DE CONSIGNA Y FEEDBACK DEL JUEGO -->
+            <div id="game-prompt-panel" class="bg-white rounded-2xl p-4 sm:px-6 sm:py-4 border border-slate-200 shadow-sm flex flex-col md:flex-row items-center justify-between gap-3">
+                <!-- Consigna Principal -->
+                <div class="text-center md:text-left">
+                    <span id="prompt-label" class="text-xs font-bold uppercase tracking-wider text-sky-700 block mb-0.5">
+                        Localiza en el mapa:
+                    </span>
+                    <h2 id="prompt-target" class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+                        Cargando mapa mundial...
+                    </h2>
+                </div>
+
+                <!-- Mensaje de Feedback («¡Correcto!» / «Incorrecto») -->
+                <div id="feedback-container" class="min-h-[44px] flex items-center justify-center">
+                    <span class="text-sm text-slate-400 font-medium">Pulsa directamente sobre el país en el mapa</span>
+                </div>
+
+                <!-- Progreso de la ronda y controles de ronda -->
+                <div class="flex items-center gap-3 w-full md:w-auto justify-between md:justify-end border-t md:border-t-0 pt-2.5 md:pt-0 border-slate-100">
+                    <div class="text-left md:text-right">
+                        <span class="text-[11px] font-semibold uppercase tracking-wider text-slate-400 block">Progreso</span>
+                        <span id="progress-text" class="text-sm sm:text-base font-bold text-slate-800">0 / 0</span>
+                    </div>
+                    <button onclick="restartCurrentRound()" title="Reiniciar ronda actual" class="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold flex items-center gap-1.5 transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                        <span>Reiniciar</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- CONTENEDOR DEL MAPA MUNDIAL INTERACTIVO -->
+            <div id="map-wrapper" class="relative flex-1 min-h-[420px] sm:min-h-[520px] lg:min-h-[580px] rounded-2xl border border-slate-300 shadow-inner overflow-hidden">
+                <!-- Indicador de carga inicial del archivo topográfico -->
+                <div id="map-loading" class="absolute inset-0 z-20 bg-sky-50/90 flex flex-col items-center justify-center gap-3 p-4 text-center">
+                    <div class="w-10 h-10 border-4 border-sky-700 border-t-transparent rounded-full animate-spin"></div>
+                    <p class="text-sm font-semibold text-slate-700">Cargando cartografía mundial de alta precisión...</p>
+                </div>
+
+                <!-- Mensaje de error si falla la descarga de red -->
+                <div id="map-error" class="hidden absolute inset-0 z-30 bg-white/95 flex flex-col items-center justify-center gap-3 p-6 text-center">
+                    <p class="text-base font-bold text-rose-600">No se pudo descargar el mapa mundial.</p>
+                    <p class="text-sm text-slate-600 max-w-md">Comprueba tu conexión a Internet y pulsa el botón para reintentar.</p>
+                    <button onclick="initMap()" class="px-4 py-2 rounded-xl bg-sky-700 text-white text-sm font-semibold hover:bg-sky-800">Reintentar carga</button>
+                </div>
+
+                <!-- Pantalla de Ronda Completada (Superpuesta al terminar) -->
+                <div id="round-complete-overlay" class="hidden absolute inset-0 z-30 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+                    <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full text-center shadow-2xl border border-slate-100">
+                        <div class="w-16 h-16 rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto mb-4">
+                            <svg class="w-9 h-9" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                        </div>
+                        <h3 id="complete-title" class="text-2xl font-extrabold text-slate-900 mb-2">¡Ronda completada!</h3>
+                        <p id="complete-message" class="text-slate-600 text-sm sm:text-base mb-6">
+                            Has localizado correctamente todos los territorios de esta ronda sin dejar ninguno atrás.
+                        </p>
+                        <div class="flex flex-col sm:flex-row gap-2.5 justify-center">
+                            <button onclick="restartCurrentRound()" class="px-5 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-sm transition-colors">
+                                Volver a jugar
+                            </button>
+                            <button onclick="navigateTo('home')" class="px-5 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm transition-colors">
+                                Ir al inicio
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SVG donde D3 renderiza el mapa mundial -->
+                <svg id="world-map-svg" class="w-full h-full block"></svg>
+
+                <!-- Controles flotantes de Zoom y Centrado (Abajo a la derecha) -->
+                <div class="absolute bottom-3 right-3 z-20 flex flex-col gap-1.5 bg-white/95 backdrop-blur p-1.5 rounded-2xl shadow-lg border border-slate-200">
+                    <button onclick="zoomMapBy(1.6)" title="Acercar mapa (+)" aria-label="Acercar mapa" class="w-10 h-10 rounded-xl hover:bg-slate-100 active:bg-slate-200 flex items-center justify-center text-slate-700 font-bold text-lg transition-colors">
+                        +
+                    </button>
+                    <button onclick="zoomMapBy(0.625)" title="Alejar mapa (-)" aria-label="Alejar mapa" class="w-10 h-10 rounded-xl hover:bg-slate-100 active:bg-slate-200 flex items-center justify-center text-slate-700 font-bold text-lg transition-colors">
+                        −
+                    </button>
+                    <div class="h-px bg-slate-200 mx-1"></div>
+                    <button onclick="resetMapView()" title="Centrar vista" aria-label="Centrar vista" class="w-10 h-10 rounded-xl hover:bg-slate-100 active:bg-slate-200 flex items-center justify-center text-slate-700 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/></svg>
+                    </button>
+                </div>
+
+                <!-- Botón discreto de acercar zona si el país objetivo es muy pequeño (Abajo a la izquierda) -->
+                <div class="absolute bottom-3 left-3 z-20 flex items-center gap-2">
+                    <button onclick="focusTargetRegion()" title="Acercar la zona geográfica del objetivo actual" class="px-3 py-2 rounded-xl bg-white/95 hover:bg-white text-slate-700 text-xs font-semibold shadow-md border border-slate-200 flex items-center gap-1.5 transition-colors">
+                        <svg class="w-4 h-4 text-sky-700" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"/></svg>
+                        <span>Acercar zona</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- PIE DE PÁGINA SENCILLO -->
+    <footer class="bg-white border-t border-slate-200 py-3 px-4 text-center text-xs text-slate-500">
+        GeoAtlas — Herramienta educativa interactiva de geografía política mundial. Arrastra para mover el mapa y usa los botones + / − o la rueda/pellizco para hacer zoom.
+    </footer>
+
+    <!-- ===================================================================== -->
+    <!-- LÓGICA DE DATOS GEOGRÁFICOS Y MOTOR DE JUEGO                          -->
+    <!-- ===================================================================== -->
+    <script>
+        /**
+         * BASE DE DATOS GEOGRÁFICA MUNDIAL (ISO 3166-1 numérico -> Datos en español)
+         * Incluye todos los estados soberanos presentes en world-atlas (countries-50m.json).
+         * Cada entrada contiene:
+         *  - id: Código numérico ISO 3166-1 (cadena de 3 dígitos con ceros a la izquierda)
+         *  - name: Nombre oficial/común correcto en español
+         *  - capital: Capital oficial correcta en español
+         *  - continent: Uno de los 6 continentes ('Europa', 'Asia', 'África', 'América del Norte', 'América del Sur', 'Oceanía')
+         */
+        const COUNTRIES_DATA = [
+            // ================= EUROPA =================
+            { id: "008", name: "Albania", capital: "Tirana", continent: "Europa" },
+            { id: "276", name: "Alemania", capital: "Berlín", continent: "Europa" },
+            { id: "020", name: "Andorra", capital: "Andorra la Vieja", continent: "Europa" },
+            { id: "040", name: "Austria", capital: "Viena", continent: "Europa" },
+            { id: "056", name: "Bélgica", capital: "Bruselas", continent: "Europa" },
+            { id: "112", name: "Bielorrusia", capital: "Minsk", continent: "Europa" },
+            { id: "070", name: "Bosnia y Herzegovina", capital: "Sarajevo", continent: "Europa" },
+            { id: "100", name: "Bulgaria", capital: "Sofía", continent: "Europa" },
+            { id: "336", name: "Ciudad del Vaticano", capital: "Ciudad del Vaticano", continent: "Europa" },
+            { id: "191", name: "Croacia", capital: "Zagreb", continent: "Europa" },
+            { id: "208", name: "Dinamarca", capital: "Copenhague", continent: "Europa" },
+            { id: "703", name: "Eslovaquia", capital: "Bratislava", continent: "Europa" },
+            { id: "705", name: "Eslovenia", capital: "Liubliana", continent: "Europa" },
+            { id: "724", name: "España", capital: "Madrid", continent: "Europa" },
+            { id: "233", name: "Estonia", capital: "Tallin", continent: "Europa" },
+            { id: "246", name: "Finlandia", capital: "Helsinki", continent: "Europa" },
+            { id: "250", name: "Francia", capital: "París", continent: "Europa" },
+            { id: "300", name: "Grecia", capital: "Atenas", continent: "Europa" },
+            { id: "348", name: "Hungría", capital: "Budapest", continent: "Europa" },
+            { id: "372", name: "Irlanda", capital: "Dublín", continent: "Europa" },
+            { id: "352", name: "Islandia", capital: "Reikiavik", continent: "Europa" },
+            { id: "380", name: "Italia", capital: "Roma", continent: "Europa" },
+            { id: "428", name: "Letonia", capital: "Riga", continent: "Europa" },
+            { id: "438", name: "Liechtenstein", capital: "Vaduz", continent: "Europa" },
+            { id: "440", name: "Lituania", capital: "Vilna", continent: "Europa" },
+            { id: "442", name: "Luxemburgo", capital: "Luxemburgo", continent: "Europa" },
+            { id: "807", name: "Macedonia del Norte", capital: "Skopie", continent: "Europa" },
+            { id: "470", name: "Malta", capital: "La Valeta", continent: "Europa" },
+            { id: "498", name: "Moldavia", capital: "Chisináu", continent: "Europa" },
+            { id: "492", name: "Mónaco", capital: "Mónaco", continent: "Europa" },
+            { id: "499", name: "Montenegro", capital: "Podgorica", continent: "Europa" },
+            { id: "578", name: "Noruega", capital: "Oslo", continent: "Europa" },
+            { id: "528", name: "Países Bajos", capital: "Ámsterdam", continent: "Europa" },
+            { id: "616", name: "Polonia", capital: "Varsovia", continent: "Europa" },
+            { id: "620", name: "Portugal", capital: "Lisboa", continent: "Europa" },
+            { id: "826", name: "Reino Unido", capital: "Londres", continent: "Europa" },
+            { id: "203", name: "República Checa", capital: "Praga", continent: "Europa" },
+            { id: "642", name: "Rumanía", capital: "Bucarest", continent: "Europa" },
+            { id: "643", name: "Rusia", capital: "Moscú", continent: "Europa" },
+            { id: "674", name: "San Marino", capital: "San Marino", continent: "Europa" },
+            { id: "688", name: "Serbia", capital: "Belgrado", continent: "Europa" },
+            { id: "752", name: "Suecia", capital: "Estocolmo", continent: "Europa" },
+            { id: "756", name: "Suiza", capital: "Berna", continent: "Europa" },
+            { id: "804", name: "Ucrania", capital: "Kiev", continent: "Europa" },
+
+            // ================= ASIA =================
+            { id: "004", name: "Afganistán", capital: "Kabul", continent: "Asia" },
+            { id: "682", name: "Arabia Saudita", capital: "Riad", continent: "Asia" },
+            { id: "051", name: "Armenia", capital: "Ereván", continent: "Asia" },
+            { id: "031", name: "Azerbaiyán", capital: "Bakú", continent: "Asia" },
+            { id: "048", name: "Baréin", capital: "Manama", continent: "Asia" },
+            { id: "050", name: "Bangladés", capital: "Daca", continent: "Asia" },
+            { id: "096", name: "Brunéi", capital: "Bandar Seri Begawan", continent: "Asia" },
+            { id: "064", name: "Bután", capital: "Timbu", continent: "Asia" },
+            { id: "116", name: "Camboya", capital: "Nom Pen", continent: "Asia" },
+            { id: "634", name: "Catar", capital: "Doha", continent: "Asia" },
+            { id: "156", name: "China", capital: "Pekín", continent: "Asia" },
+            { id: "196", name: "Chipre", capital: "Nicosia", continent: "Asia" },
+            { id: "408", name: "Corea del Norte", capital: "Pionyang", continent: "Asia" },
+            { id: "410", name: "Corea del Sur", capital: "Seúl", continent: "Asia" },
+            { id: "784", name: "Emiratos Árabes Unidos", capital: "Abu Dabi", continent: "Asia" },
+            { id: "608", name: "Filipinas", capital: "Manila", continent: "Asia" },
+            { id: "268", name: "Georgia", capital: "Tiflis", continent: "Asia" },
+            { id: "356", name: "India", capital: "Nueva Delhi", continent: "Asia" },
+            { id: "360", name: "Indonesia", capital: "Yakarta", continent: "Asia" },
+            { id: "368", name: "Irak", capital: "Bagdad", continent: "Asia" },
+            { id: "364", name: "Irán", capital: "Teherán", continent: "Asia" },
+            { id: "376", name: "Israel", capital: "Jerusalén", continent: "Asia" },
+            { id: "392", name: "Japón", capital: "Tokio", continent: "Asia" },
+            { id: "400", name: "Jordania", capital: "Amán", continent: "Asia" },
+            { id: "398", name: "Kazajistán", capital: "Astaná", continent: "Asia" },
+            { id: "417", name: "Kirguistán", capital: "Biskek", continent: "Asia" },
+            { id: "414", name: "Kuwait", capital: "Kuwait", continent: "Asia" },
+            { id: "418", name: "Laos", capital: "Vientián", continent: "Asia" },
+            { id: "422", name: "Líbano", capital: "Beirut", continent: "Asia" },
+            { id: "458", name: "Malasia", capital: "Kuala Lumpur", continent: "Asia" },
+            { id: "462", name: "Maldivas", capital: "Malé", continent: "Asia" },
+            { id: "496", name: "Mongolia", capital: "Ulán Bator", continent: "Asia" },
+            { id: "104", name: "Myanmar", capital: "Naipyidó", continent: "Asia" },
+            { id: "524", name: "Nepal", capital: "Katmandú", continent: "Asia" },
+            { id: "512", name: "Omán", capital: "Mascate", continent: "Asia" },
+            { id: "586", name: "Pakistán", capital: "Islamabad", continent: "Asia" },
+            { id: "275", name: "Palestina", capital: "Ramala", continent: "Asia" },
+            { id: "702", name: "Singapur", capital: "Singapur", continent: "Asia" },
+            { id: "760", name: "Siria", capital: "Damasco", continent: "Asia" },
+            { id: "144", name: "Sri Lanka", capital: "Sri Jayawardenapura Kotte", continent: "Asia" },
+            { id: "764", name: "Tailandia", capital: "Bangkok", continent: "Asia" },
+            { id: "158", name: "Taiwán", capital: "Taipéi", continent: "Asia" },
+            { id: "762", name: "Tayikistán", capital: "Dusambé", continent: "Asia" },
+            { id: "626", name: "Timor Oriental", capital: "Dili", continent: "Asia" },
+            { id: "795", name: "Turkmenistán", capital: "Asjabad", continent: "Asia" },
+            { id: "792", name: "Turquía", capital: "Ankara", continent: "Asia" },
+            { id: "860", name: "Uzbekistán", capital: "Taskent", continent: "Asia" },
+            { id: "704", name: "Vietnam", capital: "Hanói", continent: "Asia" },
+            { id: "887", name: "Yemen", capital: "Saná", continent: "Asia" },
+
+            // ================= ÁFRICA =================
+            { id: "024", name: "Angola", capital: "Luanda", continent: "África" },
+            { id: "012", name: "Argelia", capital: "Argel", continent: "África" },
+            { id: "204", name: "Benín", capital: "Porto Novo", continent: "África" },
+            { id: "072", name: "Botsuana", capital: "Gaborone", continent: "África" },
+            { id: "854", name: "Burkina Faso", capital: "Uagadugú", continent: "África" },
+            { id: "108", name: "Burundi", capital: "Gitega", continent: "África" },
+            { id: "132", name: "Cabo Verde", capital: "Praia", continent: "África" },
+            { id: "120", name: "Camerún", capital: "Yaundé", continent: "África" },
+            { id: "148", name: "Chad", capital: "Yamena", continent: "África" },
+            { id: "174", name: "Comoras", capital: "Moroni", continent: "África" },
+            { id: "384", name: "Costa de Marfil", capital: "Yamusukro", continent: "África" },
+            { id: "818", name: "Egipto", capital: "El Cairo", continent: "África" },
+            { id: "232", name: "Eritrea", capital: "Asmara", continent: "África" },
+            { id: "748", name: "Esuatini", capital: "Mbabane", continent: "África" },
+            { id: "231", name: "Etiopía", capital: "Adís Abeba", continent: "África" },
+            { id: "266", name: "Gabón", capital: "Libreville", continent: "África" },
+            { id: "270", name: "Gambia", capital: "Banjul", continent: "África" },
+            { id: "288", name: "Ghana", capital: "Acra", continent: "África" },
+            { id: "324", name: "Guinea", capital: "Conakri", continent: "África" },
+            { id: "624", name: "Guinea-Bisáu", capital: "Bisáu", continent: "África" },
+            { id: "226", name: "Guinea Ecuatorial", capital: "Malabo", continent: "África" },
+            { id: "404", name: "Kenia", capital: "Nairobi", continent: "África" },
+            { id: "426", name: "Lesoto", capital: "Maseru", continent: "África" },
+            { id: "430", name: "Liberia", capital: "Monrovia", continent: "África" },
+            { id: "434", name: "Libia", capital: "Trípoli", continent: "África" },
+            { id: "450", name: "Madagascar", capital: "Antananarivo", continent: "África" },
+            { id: "454", name: "Malaui", capital: "Lilongüe", continent: "África" },
+            { id: "466", name: "Malí", capital: "Bamako", continent: "África" },
+            { id: "504", name: "Marruecos", capital: "Rabat", continent: "África" },
+            { id: "480", name: "Mauricio", capital: "Port Louis", continent: "África" },
+            { id: "478", name: "Mauritania", capital: "Nuakchot", continent: "África" },
+            { id: "508", name: "Mozambique", capital: "Maputo", continent: "África" },
+            { id: "516", name: "Namibia", capital: "Windhoek", continent: "África" },
+            { id: "562", name: "Níger", capital: "Niamey", continent: "África" },
+            { id: "566", name: "Nigeria", capital: "Abuya", continent: "África" },
+            { id: "140", name: "República Centroafricana", capital: "Bangui", continent: "África" },
+            { id: "178", name: "República del Congo", capital: "Brazzaville", continent: "África" },
+            { id: "180", name: "República Democrática del Congo", capital: "Kinsasa", continent: "África" },
+            { id: "646", name: "Ruanda", capital: "Kigali", continent: "África" },
+            { id: "678", name: "Santo Tomé y Príncipe", capital: "Santo Tomé", continent: "África" },
+            { id: "686", name: "Senegal", capital: "Dakar", continent: "África" },
+            { id: "690", name: "Seychelles", capital: "Victoria", continent: "África" },
+            { id: "694", name: "Sierra Leona", capital: "Freetown", continent: "África" },
+            { id: "706", name: "Somalia", capital: "Mogadiscio", continent: "África" },
+            { id: "710", name: "Sudáfrica", capital: "Pretoria", continent: "África" },
+            { id: "729", name: "Sudán", capital: "Jartum", continent: "África" },
+            { id: "728", name: "Sudán del Sur", capital: "Yuba", continent: "África" },
+            { id: "834", name: "Tanzania", capital: "Dodoma", continent: "África" },
+            { id: "768", name: "Togo", capital: "Lomé", continent: "África" },
+            { id: "788", name: "Túnez", capital: "Túnez", continent: "África" },
+            { id: "800", name: "Uganda", capital: "Kampala", continent: "África" },
+            { id: "262", name: "Yibuti", capital: "Yibuti", continent: "África" },
+            { id: "894", name: "Zambia", capital: "Lusaka", continent: "África" },
+            { id: "716", name: "Zimbabue", capital: "Harare", continent: "África" },
+
+            // ================= AMÉRICA DEL NORTE =================
+            { id: "028", name: "Antigua y Barbuda", capital: "Saint John", continent: "América del Norte" },
+            { id: "044", name: "Bahamas", capital: "Nasáu", continent: "América del Norte" },
+            { id: "052", name: "Barbados", capital: "Bridgetown", continent: "América del Norte" },
+            { id: "084", name: "Belice", capital: "Belmopán", continent: "América del Norte" },
+            { id: "124", name: "Canadá", capital: "Ottawa", continent: "América del Norte" },
+            { id: "188", name: "Costa Rica", capital: "San José", continent: "América del Norte" },
+            { id: "192", name: "Cuba", capital: "La Habana", continent: "América del Norte" },
+            { id: "212", name: "Dominica", capital: "Roseau", continent: "América del Norte" },
+            { id: "222", name: "El Salvador", capital: "San Salvador", continent: "América del Norte" },
+            { id: "840", name: "Estados Unidos", capital: "Washington D. C.", continent: "América del Norte" },
+            { id: "308", name: "Granada", capital: "Saint George", continent: "América del Norte" },
+            { id: "320", name: "Guatemala", capital: "Ciudad de Guatemala", continent: "América del Norte" },
+            { id: "332", name: "Haití", capital: "Puerto Príncipe", continent: "América del Norte" },
+            { id: "340", name: "Honduras", capital: "Tegucigalpa", continent: "América del Norte" },
+            { id: "388", name: "Jamaica", capital: "Kingston", continent: "América del Norte" },
+            { id: "484", name: "México", capital: "Ciudad de México", continent: "América del Norte" },
+            { id: "558", name: "Nicaragua", capital: "Managua", continent: "América del Norte" },
+            { id: "591", name: "Panamá", capital: "Ciudad de Panamá", continent: "América del Norte" },
+            { id: "214", name: "República Dominicana", capital: "Santo Domingo", continent: "América del Norte" },
+            { id: "659", name: "San Cristóbal y Nieves", capital: "Basseterre", continent: "América del Norte" },
+            { id: "670", name: "San Vicente y las Granadinas", capital: "Kingstown", continent: "América del Norte" },
+            { id: "662", name: "Santa Lucía", capital: "Castries", continent: "América del Norte" },
+            { id: "780", name: "Trinidad y Tobago", capital: "Puerto España", continent: "América del Norte" },
+
+            // ================= AMÉRICA DEL SUR =================
+            { id: "032", name: "Argentina", capital: "Buenos Aires", continent: "América del Sur" },
+            { id: "068", name: "Bolivia", capital: "Sucre", continent: "América del Sur" },
+            { id: "076", name: "Brasil", capital: "Brasilia", continent: "América del Sur" },
+            { id: "152", name: "Chile", capital: "Santiago", continent: "América del Sur" },
+            { id: "170", name: "Colombia", capital: "Bogotá", continent: "América del Sur" },
+            { id: "218", name: "Ecuador", capital: "Quito", continent: "América del Sur" },
+            { id: "328", name: "Guyana", capital: "Georgetown", continent: "América del Sur" },
+            { id: "600", name: "Paraguay", capital: "Asunción", continent: "América del Sur" },
+            { id: "604", name: "Perú", capital: "Lima", continent: "América del Sur" },
+            { id: "740", name: "Surinam", capital: "Paramaribo", continent: "América del Sur" },
+            { id: "858", name: "Uruguay", capital: "Montevideo", continent: "América del Sur" },
+            { id: "862", name: "Venezuela", capital: "Caracas", continent: "América del Sur" },
+
+            // ================= OCEANÍA =================
+            { id: "036", name: "Australia", capital: "Canberra", continent: "Oceanía" },
+            { id: "242", name: "Fiyi", capital: "Suva", continent: "Oceanía" },
+            { id: "584", name: "Islas Marshall", capital: "Majuro", continent: "Oceanía" },
+            { id: "090", name: "Islas Salomón", capital: "Honiara", continent: "Oceanía" },
+            { id: "296", name: "Kiribati", capital: "Tarawa Sur", continent: "Oceanía" },
+            { id: "583", name: "Micronesia", capital: "Palikir", continent: "Oceanía" },
+            { id: "520", name: "Nauru", capital: "Yaren", continent: "Oceanía" },
+            { id: "554", name: "Nueva Zelanda", capital: "Wellington", continent: "Oceanía" },
+            { id: "585", name: "Palaos", capital: "Ngerulmud", continent: "Oceanía" },
+            { id: "598", name: "Papúa Nueva Guinea", capital: "Port Moresby", continent: "Oceanía" },
+            { id: "882", name: "Samoa", capital: "Apia", continent: "Oceanía" },
+            { id: "776", name: "Tonga", capital: "Nukualofa", continent: "Oceanía" },
+            { id: "798", name: "Tuvalu", capital: "Funafuti", continent: "Oceanía" },
+            { id: "548", name: "Vanuatu", capital: "Port Vila", continent: "Oceanía" }
+        ];
+
+        const CONTINENTS = [
+            "Europa",
+            "Asia",
+            "África",
+            "América del Norte",
+            "América del Sur",
+            "Oceanía"
+        ];
+
+        // Encuadres geográficos óptimos por continente [longitudCentro, latitudCentro, nivelZoom]
+        const CONTINENT_VIEWS = {
+            "Europa": { center: [15, 53], scale: 3.6 },
+            "Asia": { center: [92, 34], scale: 2.2 },
+            "África": { center: [20, 2], scale: 2.5 },
+            "América del Norte": { center: [-96, 36], scale: 2.2 },
+            "América del Sur": { center: [-60, -22], scale: 2.5 },
+            "Oceanía": { center: [148, -22], scale: 2.8 }
+        };
+
+        // =====================================================================
+        // ESTADO GLOBAL DE LA APLICACIÓN
+        // =====================================================================
+        const state = {
+            view: "home",                 // 'home' | 'countries' | 'capitals'
+            selectedContinent: "Europa",  // Continente activo en el modo Capitales
+            mapLoaded: false,
+            playableCountries: [],        // Países filtrados que tienen geometría verificada en el TopoJSON
+            countryById: new Map(),       // Mapa rápido ISO ID -> Objeto país
+            featureById: new Map(),       // Mapa rápido ISO ID -> Feature GeoJSON
+            queue: [],                    // Cola aleatoria sin repeticiones de la ronda actual
+            currentTarget: null,          // Objeto país objetivo actual
+            solvedIds: new Set(),         // IDs acertados en la ronda actual
+            totalInRound: 0,
+            isTransitioning: false        // Bloqueo breve entre acierto y siguiente pregunta
+        };
+
+        // Variables D3 del mapa
+        let svg, mapGroup, projection, pathGenerator, zoomBehavior;
+        const BASE_WIDTH = 960;
+        const BASE_HEIGHT = 520;
+
+        // =====================================================================
+        // INICIALIZACIÓN Y CARGA DEL MAPA MUNDIAL (TOPOJSON 50m)
+        // =====================================================================
+        async function initMap() {
+            const loadingEl = document.getElementById("map-loading");
+            const errorEl = document.getElementById("map-error");
+            loadingEl.classList.remove("hidden");
+            errorEl.classList.add("hidden");
+
+            try {
+                // Cargamos countries-50m.json para que microestados e islas pequeñas sean visibles y clicables
+                const response = await fetch("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json");
+                if (!response.ok) throw new Error("Error HTTP al cargar cartografía");
+                const topology = await response.json();
+
+                const geojson = topojson.feature(topology, topology.objects.countries);
+
+                // Construir diccionario rápido de nuestra base de datos
+                const dbMap = new Map();
+                COUNTRIES_DATA.forEach(c => dbMap.set(c.id, c));
+
+                // Verificar qué países de nuestra base existen en el GeoJSON para garantizar 100% de jugabilidad
+                const availableGeoIds = new Set();
+                geojson.features.forEach(f => {
+                    if (f.id !== undefined && f.id !== null) {
+                        const normalizedId = String(f.id).padStart(3, "0");
+                        f.normalizedId = normalizedId;
+                        availableGeoIds.add(normalizedId);
+                        if (dbMap.has(normalizedId)) {
+                            state.featureById.set(normalizedId, f);
+                        }
+                    }
+                });
+
+                state.playableCountries = COUNTRIES_DATA.filter(c => availableGeoIds.has(c.id));
+                state.playableCountries.forEach(c => state.countryById.set(c.id, c));
+
+                renderWorldSVG(geojson);
+                renderContinentButtons();
+
+                state.mapLoaded = true;
+                loadingEl.classList.add("hidden");
+
+                // Si el usuario ya había navegado a uno de los juegos mientras cargaba el mapa, iniciarlo
+                if (state.view === "countries" || state.view === "capitals") {
+                    startNewRound();
+                }
+            } catch (err) {
+                console.error("Error inicializando mapa:", err);
+                loadingEl.classList.add("hidden");
+                errorEl.classList.remove("hidden");
+            }
+        }
+
+        /**
+         * Renderiza el SVG con proyección Natural Earth y configura d3-zoom
+         */
+        function renderWorldSVG(geojson) {
+            svg = d3.select("#world-map-svg")
+                .attr("viewBox", `0 0 ${BASE_WIDTH} ${BASE_HEIGHT}`)
+                .attr("preserveAspectRatio", "xMidYMid meet");
+
+            svg.selectAll("*").remove();
+
+            // Proyección equirectangular / NaturalEarth1 equilibrada
+            projection = d3.geoNaturalEarth1()
+                .scale(175)
+                .translate([BASE_WIDTH / 2, BASE_HEIGHT / 1.88]);
+
+            pathGenerator = d3.geoPath().projection(projection);
+
+            mapGroup = svg.append("g").attr("id", "countries-layer");
+
+            // Dibujar todos los territorios del mundo
+            mapGroup.selectAll("path")
+                .data(geojson.features)
+                .enter()
+                .append("path")
+                .attr("d", pathGenerator)
+                .attr("id", d => `country-${d.normalizedId || "none"}`)
+                .attr("class", d => {
+                    const isPlayable = d.normalizedId && state.countryById.has(d.normalizedId);
+                    return isPlayable ? "country-path country-playable" : "country-path country-non-playable";
+                })
+                .on("click", function(event, d) {
+                    // Evitar que el fin de un arrastre (drag) dispare un clic accidental
+                    if (event.defaultPrevented) return;
+                    if (!d.normalizedId || !state.countryById.has(d.normalizedId)) return;
+                    handleCountrySelection(d.normalizedId);
+                });
+
+            // Configurar d3-zoom para ratón (rueda + arrastre) y pantalla táctil (pellizco + dedo)
+            zoomBehavior = d3.zoom()
+                .scaleExtent([1, 18])
+                .translateExtent([[-120, -80], [BASE_WIDTH + 120, BASE_HEIGHT + 80]])
+                .on("zoom", (event) => {
+                    mapGroup.attr("transform", event.transform);
+                    // Ajustar grosor de fronteras dinámicamente al acercar mucho
+                    const k = event.transform.k;
+                    mapGroup.selectAll(".country-path")
+                        .style("stroke-width", `${Math.max(0.12, 0.48 / Math.pow(k, 0.65))}px`);
+                });
+
+            svg.call(zoomBehavior);
+        }
+
+        // =====================================================================
+        // NAVEGACIÓN ENTRE VISTAS
+        // =====================================================================
+        function navigateTo(targetView) {
+            state.view = targetView;
+
+            // Actualizar estilos de botones de navegación superior
+            document.querySelectorAll(".nav-btn").forEach(btn => {
+                btn.classList.remove("bg-sky-50", "text-sky-800");
+                btn.classList.add("text-slate-600", "hover:bg-slate-100", "hover:text-slate-900");
+            });
+            const activeBtn = document.getElementById(`nav-${targetView}`);
+            if (activeBtn) {
+                activeBtn.classList.add("bg-sky-50", "text-sky-800");
+                activeBtn.classList.remove("text-slate-600", "hover:bg-slate-100", "hover:text-slate-900");
+            }
+
+            const homeSection = document.getElementById("view-home");
+            const gameSection = document.getElementById("view-game");
+            const continentBar = document.getElementById("continent-selector-bar");
+
+            if (targetView === "home") {
+                homeSection.classList.remove("hidden");
+                gameSection.classList.add("hidden");
+                return;
+            }
+
+            homeSection.classList.add("hidden");
+            gameSection.classList.remove("hidden");
+
+            if (targetView === "countries") {
+                continentBar.classList.add("hidden");
+            } else if (targetView === "capitals") {
+                continentBar.classList.remove("hidden");
+                updateContinentButtonsUI();
+            }
+
+            if (state.mapLoaded) {
+                startNewRound();
+            }
+        }
+
+        // =====================================================================
+        // SELECTOR DE CONTINENTES (JUEGO 2: CAPITALES)
+        // =====================================================================
+        function renderContinentButtons() {
+            const container = document.getElementById("continent-buttons");
+            container.innerHTML = "";
+
+            CONTINENTS.forEach(continent => {
+                const count = state.playableCountries.filter(c => c.continent === continent).length;
+                const btn = document.createElement("button");
+                btn.type = "button";
+                btn.dataset.continent = continent;
+                btn.className = "continent-btn px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold border transition-all flex items-center justify-between gap-1";
+                btn.innerHTML = `
+                    <span class="truncate">${continent}</span>
+                    <span class="text-[11px] px-1.5 py-0.5 rounded-md bg-black/5">${count}</span>
+                `;
+                btn.onclick = () => selectContinent(continent);
+                container.appendChild(btn);
+            });
+            updateContinentButtonsUI();
+        }
+
+        function updateContinentButtonsUI() {
+            document.querySelectorAll(".continent-btn").forEach(btn => {
+                const isSelected = btn.dataset.continent === state.selectedContinent;
+                if (isSelected) {
+                    btn.className = "continent-btn px-3 py-2 rounded-xl text-xs sm:text-sm font-bold border border-emerald-600 bg-emerald-600 text-white shadow-sm transition-all flex items-center justify-between gap-1";
+                    btn.querySelector("span:last-child").className = "text-[11px] px-1.5 py-0.5 rounded-md bg-white/20 text-white";
+                } else {
+                    btn.className = "continent-btn px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 transition-all flex items-center justify-between gap-1";
+                    btn.querySelector("span:last-child").className = "text-[11px] px-1.5 py-0.5 rounded-md bg-slate-200/70 text-slate-600";
+                }
+            });
+
+            const count = state.playableCountries.filter(c => c.continent === state.selectedContinent).length;
+            document.getElementById("continent-count-info").textContent = `${count} países en ${state.selectedContinent}`;
+        }
+
+        function selectContinent(continent) {
+            state.selectedContinent = continent;
+            updateContinentButtonsUI();
+            startNewRound();
+        }
+
+        // =====================================================================
+        // MOTOR DE RONDAS Y VALIDACIÓN DE RESPUESTAS
+        // =====================================================================
+        function shuffleArray(array) {
+            const arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        function startNewRound() {
+            if (!state.mapLoaded) return;
+
+            state.isTransitioning = false;
+            state.solvedIds.clear();
+            document.getElementById("round-complete-overlay").classList.add("hidden");
+
+            // Determinar conjunto de países para la ronda según el modo de juego
+            let pool = [];
+            if (state.view === "countries") {
+                pool = [...state.playableCountries];
+                resetMapView(false);
+            } else if (state.view === "capitals") {
+                pool = state.playableCountries.filter(c => c.continent === state.selectedContinent);
+                zoomToContinent(state.selectedContinent);
+            }
+
+            state.totalInRound = pool.length;
+            state.queue = shuffleArray(pool);
+
+            // Restablecer estilos visuales de todos los países en el mapa
+            mapGroup.selectAll(".country-playable")
+                .classed("country-solved", false)
+                .classed("country-error", false)
+                .classed("country-hint-pulse", false)
+                .classed("country-dimmed", d => {
+                    if (state.view !== "capitals") return false;
+                    const country = state.countryById.get(d.normalizedId);
+                    return country && country.continent !== state.selectedContinent;
+                });
+
+            clearFeedback();
+            nextQuestion();
+        }
+
+        function restartCurrentRound() {
+            startNewRound();
+        }
+
+        function nextQuestion() {
+            updateProgressUI();
+
+            if (state.queue.length === 0) {
+                showRoundComplete();
+                return;
+            }
+
+            state.currentTarget = state.queue.pop();
+            const labelEl = document.getElementById("prompt-label");
+            const targetEl = document.getElementById("prompt-target");
+
+            if (state.view === "countries") {
+                labelEl.textContent = "Localiza en el mapa:";
+                labelEl.className = "text-xs font-bold uppercase tracking-wider text-sky-700 block mb-0.5";
+                targetEl.textContent = state.currentTarget.name;
+            } else {
+                labelEl.textContent = `¿De qué país de ${state.selectedContinent} es capital?`;
+                labelEl.className = "text-xs font-bold uppercase tracking-wider text-emerald-700 block mb-0.5";
+                targetEl.textContent = state.currentTarget.capital;
+            }
+        }
+
+        /**
+         * Procesa la selección de un país en el mapa
+         */
+        function handleCountrySelection(clickedId) {
+            if (state.isTransitioning || !state.currentTarget) return;
+
+            const clickedCountry = state.countryById.get(clickedId);
+            if (!clickedCountry) return;
+
+            const clickedPath = d3.select(`#country-${clickedId}`);
+
+            // Comprobar si el país pulsado coincide con el objetivo actual
+            if (clickedId === state.currentTarget.id) {
+                state.isTransitioning = true;
+                state.solvedIds.add(clickedId);
+
+                // Marcar en verde esmeralda en el mapa
+                clickedPath
+                    .classed("country-error", false)
+                    .classed("country-hint-pulse", false)
+                    .classed("country-solved", true);
+
+                // Mostrar mensaje exacto «¡Correcto!»
+                showFeedback(true, clickedCountry);
+                updateProgressUI();
+
+                // Avanzar automáticamente al siguiente país tras una breve pausa visual
+                setTimeout(() => {
+                    state.isTransitioning = false;
+                    clearFeedback();
+                    nextQuestion();
+                }, 900);
+            } else {
+                // Respuesta incorrecta: mostrar «Incorrecto» y permitir volver a intentarlo
+                showFeedback(false, clickedCountry);
+
+                // Destello rojo temporal en el territorio pulsado (si no estaba ya resuelto)
+                if (!state.solvedIds.has(clickedId)) {
+                    clickedPath.classed("country-error", true);
+                    setTimeout(() => {
+                        clickedPath.classed("country-error", false);
+                    }, 650);
+                }
+            }
+        }
+
+        function showFeedback(isCorrect, clickedCountry) {
+            const container = document.getElementById("feedback-container");
+            if (isCorrect) {
+                const detail = state.view === "capitals"
+                    ? `${clickedCountry.capital} es la capital de ${clickedCountry.name}`
+                    : clickedCountry.name;
+
+                container.innerHTML = `
+                    <div class="feedback-badge inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-100 border border-emerald-300 text-emerald-900 shadow-sm">
+                        <svg class="w-5 h-5 text-emerald-600 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                        <div>
+                            <span class="font-extrabold text-sm sm:text-base">¡Correcto!</span>
+                            <span class="text-xs text-emerald-800 ml-1.5 hidden sm:inline">(${detail})</span>
+                        </div>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = `
+                    <div class="feedback-badge inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-rose-100 border border-rose-300 text-rose-900 shadow-sm">
+                        <svg class="w-5 h-5 text-rose-600 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                        <div>
+                            <span class="font-extrabold text-sm sm:text-base">Incorrecto</span>
+                            <span class="text-xs text-rose-800 ml-1.5">Has pulsado ${clickedCountry.name}. Inténtalo de nuevo.</span>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function clearFeedback() {
+            const container = document.getElementById("feedback-container");
+            container.innerHTML = `<span class="text-xs sm:text-sm text-slate-400 font-medium">Pulsa directamente sobre el país en el mapa</span>`;
+        }
+
+        function updateProgressUI() {
+            const solved = state.solvedIds.size;
+            const total = state.totalInRound;
+            document.getElementById("progress-text").textContent = `${solved} / ${total}`;
+        }
+
+        function showRoundComplete() {
+            const overlay = document.getElementById("round-complete-overlay");
+            const titleEl = document.getElementById("complete-title");
+            const msgEl = document.getElementById("complete-message");
+
+            if (state.view === "countries") {
+                titleEl.textContent = "¡Has completado el mundo!";
+                msgEl.textContent = `Has localizado correctamente los ${state.totalInRound} países del mundo en esta ronda.`;
+            } else {
+                titleEl.textContent = `¡${state.selectedContinent} completado!`;
+                msgEl.textContent = `Has acertado las ${state.totalInRound} capitales de ${state.selectedContinent}. Puedes volver a jugar o elegir otro continente.`;
+            }
+
+            overlay.classList.remove("hidden");
+        }
+
+        // =====================================================================
+        // CONTROLES DE CÁMARA, ZOOM Y ENFOQUE GEOGRÁFICO
+        // =====================================================================
+        function zoomMapBy(factor) {
+            if (!svg || !zoomBehavior) return;
+            svg.transition().duration(250).call(zoomBehavior.scaleBy, factor);
+        }
+
+        function resetMapView(animate = true) {
+            if (!svg || !zoomBehavior) return;
+            if (state.view === "capitals") {
+                zoomToContinent(state.selectedContinent);
+                return;
+            }
+            if (animate) {
+                svg.transition().duration(450).call(zoomBehavior.transform, d3.zoomIdentity);
+            } else {
+                svg.call(zoomBehavior.transform, d3.zoomIdentity);
+            }
+        }
+
+        function zoomToContinent(continent) {
+            if (!svg || !zoomBehavior || !projection) return;
+            const cfg = CONTINENT_VIEWS[continent];
+            if (!cfg) return;
+
+            const [x, y] = projection(cfg.center);
+            const k = cfg.scale;
+            const tx = BASE_WIDTH / 2 - k * x;
+            const ty = BASE_HEIGHT / 2 - k * y;
+
+            const transform = d3.zoomIdentity.translate(tx, ty).scale(k);
+            svg.transition().duration(550).call(zoomBehavior.transform, transform);
+        }
+
+        /**
+         * Acerca la cámara hacia el territorio del país objetivo actual (útil para islas pequeñas o microestados)
+         */
+        function focusTargetRegion() {
+            if (!state.currentTarget || !svg || !zoomBehavior) return;
+            const feature = state.featureById.get(state.currentTarget.id);
+            if (!feature) return;
+
+            const centroid = pathGenerator.centroid(feature);
+            if (!centroid || isNaN(centroid[0]) || isNaN(centroid[1])) return;
+
+            const bounds = pathGenerator.bounds(feature);
+            const dx = bounds[1][0] - bounds[0][0];
+            const dy = bounds[1][1] - bounds[0][1];
+            const maxDim = Math.max(dx, dy);
+
+            // Calcular un nivel de zoom razonable sin revelar demasiado si es un país grande
+            const targetScale = maxDim < 8 ? 7.5 : (maxDim < 25 ? 5.0 : 3.2);
+            const tx = BASE_WIDTH / 2 - targetScale * centroid[0];
+            const ty = BASE_HEIGHT / 2 - targetScale * centroid[1];
+
+            const transform = d3.zoomIdentity.translate(tx, ty).scale(targetScale);
+            svg.transition().duration(550).call(zoomBehavior.transform, transform);
+        }
+
+        // Arrancar la carga del mapa en cuanto el documento esté listo
+        window.addEventListener("DOMContentLoaded", () => {
+            initMap();
+        });
+    </script>
+</body>
+</html>
