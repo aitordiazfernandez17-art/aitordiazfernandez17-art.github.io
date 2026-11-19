@@ -1,16 +1,24 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta name="google-site-verification" content="4ggvJLq_o7iaMdYC6qEzjA6Alsr8aW1n0uci5rqfGIE" />
-    <script async src="https://www.googletagmanager.com/gtm.js?id=G-E2J7E7R84C"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <!-- Verificación de propiedad de Google Search Console (conservar/completar el atributo content con tu código real) -->
+    <meta name="google-site-verification" content="">
     <title>GeoAtlas — Atlas Interactivo de Geografía Mundial</title>
+
+    <!-- Google Analytics 4 (G-E2J7E7R84C) con soporte de consentimiento previo -->
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('consent', 'default', {
+            'analytics_storage': localStorage.getItem('geoatlas_consent_analytics') === 'denied' ? 'denied' : 'granted'
+        });
+        gtag('js', new Date());
+        gtag('config', 'G-E2J7E7R84C');
+    </script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-E2J7E7R84C"></script>
+
     <!-- Tailwind CSS para diseño limpio, responsivo y profesional -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Tipografía Inter desde Google Fonts -->
@@ -323,9 +331,20 @@
         </section>
     </main>
 
-    <!-- PIE DE PÁGINA SENCILLO -->
-    <footer class="bg-white border-t border-slate-200 py-3 px-4 text-center text-xs text-slate-500">
-        GeoAtlas — Herramienta educativa interactiva de geografía política mundial. Arrastra para mover el mapa y usa los botones + / − o la rueda/pellizco para hacer zoom.
+    <!-- PIE DE PÁGINA SENCILLO CON ENLACES LEGALES Y DE CONTACTO -->
+    <footer class="bg-white border-t border-slate-200 py-4 px-4 sm:px-6 lg:px-8 text-xs text-slate-500 mt-auto">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
+            <p class="text-center sm:text-left">
+                GeoAtlas — Plataforma educativa de geografía mundial. Arrastra para mover el mapa y usa los botones + / − o la rueda/pellizco para hacer zoom.
+            </p>
+            <nav aria-label="Enlaces legales y de contacto" class="flex flex-wrap items-center justify-center gap-x-4 gap-y-1.5 font-medium text-slate-600 shrink-0">
+                <a href="privacidad.html" class="hover:text-sky-700 hover:underline transition-colors">Política de privacidad</a>
+                <span class="text-slate-300 select-none" aria-hidden="true">·</span>
+                <a href="cookies.html" class="hover:text-sky-700 hover:underline transition-colors">Política de cookies</a>
+                <span class="text-slate-300 select-none" aria-hidden="true">·</span>
+                <a href="contacto.html" class="hover:text-sky-700 hover:underline transition-colors">Contacto</a>
+            </nav>
+        </div>
     </footer>
 
     <!-- ===================================================================== -->
@@ -1023,6 +1042,12 @@
 
         // Arrancar la carga del mapa en cuanto el documento esté listo
         window.addEventListener("DOMContentLoaded", () => {
+            // Permitir abrir directamente un modo de juego mediante parámetro URL (?modo=countries o ?modo=capitals)
+            const params = new URLSearchParams(window.location.search);
+            const initialMode = params.get("modo");
+            if (initialMode === "countries" || initialMode === "capitals") {
+                navigateTo(initialMode);
+            }
             initMap();
         });
     </script>
