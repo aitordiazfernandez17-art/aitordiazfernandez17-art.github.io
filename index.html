@@ -10,6 +10,7 @@
   <meta property="og:title" content="GeoAtlas — Juegos de Geografía, Capitales del Mundo, Países, Banderas y Mapas Interactivos">
   <meta property="og:description" content="Aprende geografía mundial con juegos de geografía, juegos de capitales del mundo, juegos de países, juegos de banderas, fichas de países y mapas interactivos.">
   <title>GeoAtlas — Juegos de Geografía, Capitales del Mundo, Países, Banderas y Mapas Interactivos</title>
+
   <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -21,7 +22,7 @@
     }
   </script>
 
-  <!-- Google Consent Mode v2 (Denegado por defecto hasta aceptación explícita) + GA4 -->
+  <!-- Google Consent Mode v2 + GA4 -->
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
@@ -44,62 +45,52 @@
   </script>
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-E2J7E7R84C"></script>
 
-  <!-- D3.js y TopoJSON para cartografía vectorial interactiva -->
+  <!-- D3.js y TopoJSON -->
   <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js"></script>
 
-  <!-- Estilos de GeoAtlas 2.0 -->
+  <!-- Estilos GeoAtlas 2.0 -->
   <link rel="stylesheet" href="geoatlas-v2.css">
 
   <style>
     :root {
       --bg: #f4f7fb;
       --surface: #ffffff;
-      --surface-soft: #eef3fa;
+      --surface-alt: #eef3f9;
+      --text: #0f172a;
+      --muted: #475569;
       --primary: #1d4ed8;
       --primary-hover: #1e40af;
-      --accent: #0ea5e9;
-      --success: #16a34a;
-      --success-bg: #dcfce7;
-      --danger: #dc2626;
-      --danger-bg: #fee2e2;
-      --text: #0f172a;
-      --text-muted: #475569;
+      --accent: #0f766e;
       --border: #cbd5e1;
-      --ocean: #dbeafe;
-      --land: #e2e8f0;
-      --land-hover: #93c5fd;
-      --land-active: #2563eb;
-      --land-solved: #22c55e;
-      --shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08);
-      --radius: 14px;
+      --success: #15803d;
+      --error: #b91c1c;
+      --radius: 12px;
+      --shadow: 0 6px 20px rgba(15, 23, 42, 0.06);
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * { box-sizing: border-box; }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, Helvetica, Arial, sans-serif;
-      background-color: var(--bg);
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
       color: var(--text);
-      line-height: 1.55;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
+      line-height: 1.5;
     }
 
-    /* Barra superior */
-    header {
+    header.topbar {
       background: var(--surface);
       border-bottom: 1px solid var(--border);
       position: sticky;
       top: 0;
-      z-index: 40;
+      z-index: 50;
     }
 
-    .nav-container {
-      max-width: 1280px;
+    .topbar-inner {
+      max-width: 1200px;
       margin: 0 auto;
-      padding: 0.85rem 1.25rem;
+      padding: 0.75rem 1rem;
       display: flex;
       flex-wrap: wrap;
       align-items: center;
@@ -108,169 +99,70 @@
     }
 
     .brand {
-      display: flex;
+      display: inline-flex;
       align-items: center;
-      gap: 0.6rem;
-      text-decoration: none;
-      color: var(--text);
+      gap: 0.5rem;
       font-weight: 800;
-      font-size: 1.3rem;
-      cursor: pointer;
+      font-size: 1.2rem;
+      color: var(--text);
+      text-decoration: none;
     }
 
-    .brand-icon {
-      width: 36px;
-      height: 36px;
-      border-radius: 10px;
-      background: linear-gradient(135deg, var(--primary), var(--accent));
-      color: #fff;
-      display: grid;
-      place-items: center;
-      font-size: 1.15rem;
-    }
-
-    nav.main-menu {
+    .nav-group {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.45rem;
+      gap: 0.4rem;
     }
 
     .nav-btn {
       border: 1px solid transparent;
       background: transparent;
-      color: var(--text-muted);
+      color: var(--muted);
+      padding: 0.45rem 0.75rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
       font-weight: 600;
-      font-size: 0.92rem;
-      padding: 0.48rem 0.85rem;
-      border-radius: 999px;
       cursor: pointer;
-      transition: all 0.18s ease;
     }
 
-    .nav-btn:hover {
-      background: var(--surface-soft);
+    .nav-btn:hover, .nav-btn.active {
+      background: var(--surface-alt);
       color: var(--primary);
-    }
-
-    .nav-btn.active {
-      background: var(--primary);
-      color: #fff;
+      border-color: var(--border);
     }
 
     main {
-      flex: 1;
-      max-width: 1280px;
-      width: 100%;
-      margin: 0 auto;
-      padding: 1.5rem 1.25rem 3rem;
+      max-width: 1200px;
+      margin: 1.5rem auto;
+      padding: 0 1rem 3rem;
     }
 
     .view { display: none; }
-    .view.active { display: block; animation: fadeIn 0.25s ease; }
+    .view.active { display: block; }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(4px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    /* Portada / Inicio */
-    .hero {
-      background: linear-gradient(135deg, #06283d 0%, #0f4c5c 45%, #15803d 100%);
-      color: #fff;
-      border-radius: 22px;
-      padding: 2.75rem 2rem;
-      margin-bottom: 2rem;
-      box-shadow: var(--shadow);
-    }
-
-    .hero-badge {
-      display: inline-block;
-      background: rgba(255, 255, 255, 0.16);
-      border: 1px solid rgba(255, 255, 255, 0.28);
-      padding: 0.32rem 0.9rem;
-      border-radius: 999px;
-      font-size: 0.82rem;
-      font-weight: 700;
-      margin-bottom: 1rem;
-    }
-
-    .hero h1 {
-      font-size: clamp(2.1rem, 4.4vw, 3.2rem);
-      line-height: 1.12;
-      margin-bottom: 0.55rem;
-      letter-spacing: -0.02em;
-    }
-
-    .hero-tagline {
-      font-size: clamp(1.05rem, 2vw, 1.3rem);
-      font-weight: 700;
-      color: #bbf7d0;
-      margin-bottom: 1rem;
-    }
-
-    .hero p {
-      max-width: 720px;
-      color: #e2e8f0;
-      font-size: 1.03rem;
-      margin-bottom: 1.5rem;
-    }
-
-    .cards-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
-      gap: 1.25rem;
-      margin-bottom: 2.25rem;
-    }
-
-    .game-card {
+    .card {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 1.65rem;
+      padding: 1.25rem;
       box-shadow: var(--shadow);
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      gap: 1.1rem;
+      margin-bottom: 1.25rem;
     }
 
-    .game-card-tag {
-      display: inline-block;
-      font-size: 0.78rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      color: var(--primary);
-      background: var(--surface-soft);
-      padding: 0.25rem 0.65rem;
-      border-radius: 6px;
-      width: fit-content;
-    }
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; }
+    .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
 
-    .game-card h2 {
-      font-size: 1.35rem;
-      margin: 0.35rem 0;
-    }
-
-    .game-card p {
-      color: var(--text-muted);
-      font-size: 0.96rem;
+    .btn-primary, .btn-secondary {
+      border-radius: 8px;
+      padding: 0.55rem 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid var(--primary);
     }
 
     .btn-primary {
       background: var(--primary);
       color: #fff;
-      border: none;
-      border-radius: 10px;
-      padding: 0.75rem 1.25rem;
-      font-size: 0.98rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.18s ease;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.45rem;
     }
 
     .btn-primary:hover { background: var(--primary-hover); }
@@ -278,175 +170,58 @@
     .btn-secondary {
       background: var(--surface);
       color: var(--text);
-      border: 1px solid var(--border);
+      border-color: var(--border);
+    }
+
+    .btn-secondary:hover { background: var(--surface-alt); }
+
+    .map-box {
+      width: 100%;
+      height: 460px;
+      background: #e2e8f0;
       border-radius: 10px;
-      padding: 0.6rem 1rem;
-      font-size: 0.9rem;
-      font-weight: 600;
+      overflow: hidden;
+      position: relative;
+      border: 1px solid var(--border);
+    }
+
+    .map-box svg { width: 100%; height: 100%; display: block; }
+
+    .country-path {
+      fill: #cbd5e1;
+      stroke: #ffffff;
+      stroke-width: 0.6;
       cursor: pointer;
-      transition: all 0.18s ease;
+      transition: fill 0.15s ease;
     }
 
-    .btn-secondary:hover {
-      background: var(--surface-soft);
-      border-color: var(--primary);
-      color: var(--primary);
-    }
-
-    /* Sección editorial educativa */
-    .edu-section {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 1.75rem;
-      box-shadow: var(--shadow);
-    }
-
-    .edu-section h2 {
-      font-size: 1.3rem;
-      margin-bottom: 0.75rem;
-    }
-
-    .edu-section p {
-      color: var(--text-muted);
-      margin-bottom: 0.85rem;
-    }
-
-    .edu-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 1rem;
-      margin-top: 1rem;
-    }
-
-    .edu-item {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 1rem;
-    }
-
-    .edu-item h3 {
-      font-size: 1rem;
-      margin-bottom: 0.35rem;
-      color: var(--primary);
-    }
-
-    .edu-item p {
-      font-size: 0.9rem;
-      margin-bottom: 0;
-    }
-
-    /* Interfaz de Juego */
-    .game-panel {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 1.25rem;
-      box-shadow: var(--shadow);
-    }
-
-    .game-header {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
-      padding-bottom: 1rem;
-      border-bottom: 1px solid var(--border);
-      margin-bottom: 1rem;
-    }
-
-    .prompt-box {
-      display: flex;
-      flex-direction: column;
-      gap: 0.2rem;
-    }
-
-    .prompt-label {
-      font-size: 0.82rem;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      color: var(--text-muted);
-      font-weight: 700;
-    }
-
-    .prompt-target {
-      font-size: clamp(1.35rem, 2.8vw, 1.9rem);
-      font-weight: 800;
-      color: var(--primary);
-    }
-
-    .status-area {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 0.75rem;
-    }
-
-    .progress-pill {
-      background: var(--surface-soft);
-      color: var(--text);
-      font-weight: 700;
-      font-size: 0.9rem;
-      padding: 0.45rem 0.9rem;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-    }
+    .country-path:hover { fill: #93c5fd; }
+    .country-path.solved { fill: #22c55e; }
+    .country-path.dimmed { opacity: 0.25; }
+    .country-path.wrong-flash { fill: #ef4444; }
 
     .feedback-banner {
-      min-height: 44px;
-      border-radius: 10px;
-      padding: 0.6rem 1rem;
-      margin-bottom: 0.9rem;
-      font-weight: 700;
-      font-size: 1rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 0.75rem;
-      background: var(--surface-soft);
-      color: var(--text-muted);
+      margin-top: 0.75rem;
+      padding: 0.7rem 1rem;
+      border-radius: 8px;
+      background: var(--surface-alt);
       border: 1px solid var(--border);
-      transition: all 0.2s ease;
-    }
-
-    .feedback-banner.correct {
-      background: var(--success-bg);
-      color: var(--success);
-      border-color: #86efac;
-    }
-
-    .feedback-banner.incorrect {
-      background: var(--danger-bg);
-      color: var(--danger);
-      border-color: #fca5a5;
-    }
-
-    /* Selector de continentes */
-    .continent-bar {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      margin-bottom: 1rem;
-    }
-
-    .continent-btn {
-      border: 1px solid var(--border);
-      background: var(--bg);
-      color: var(--text);
-      padding: 0.5rem 0.9rem;
-      border-radius: 999px;
       font-weight: 600;
-      font-size: 0.9rem;
-      cursor: pointer;
-      transition: all 0.15s ease;
     }
 
-    .continent-btn:hover {
-      border-color: var(--primary);
-      color: var(--primary);
+    .feedback-banner.correct { background: #dcfce7; color: var(--success); border-color: #86efac; }
+    .feedback-banner.incorrect { background: #fee2e2; color: var(--error); border-color: #fca5a5; }
+
+    .complete-banner {
+      display: none;
+      margin-top: 1rem;
+      padding: 1rem;
+      border-radius: 10px;
+      background: #ecfdf5;
+      border: 1px solid #6ee7b7;
     }
+
+    .complete-banner.visible { display: block; }
 
     .continent-btn.active {
       background: var(--primary);
@@ -454,737 +229,682 @@
       border-color: var(--primary);
     }
 
-    /* Contenedor del Mapa Interactivo */
-    .map-wrapper {
-      position: relative;
-      width: 100%;
-      height: 540px;
-      background: var(--ocean);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      overflow: hidden;
-      touch-action: none;
-    }
-
-    @media (max-width: 680px) {
-      .map-wrapper { height: 400px; }
-    }
-
-    svg.world-map {
-      width: 100%;
-      height: 100%;
-      display: block;
-      cursor: grab;
-    }
-
-    svg.world-map:active { cursor: grabbing; }
-
-    .country-path {
-      fill: var(--land);
-      stroke: #64748b;
-      stroke-width: 0.55px;
-      vector-effect: non-scaling-stroke;
-      transition: fill 0.14s ease;
-      cursor: pointer;
-    }
-
-    .country-path:hover { fill: var(--land-hover); }
-    .country-path.solved { fill: var(--land-solved); }
-    .country-path.wrong-flash { fill: #ef4444 !important; }
-    .country-path.dimmed { fill: #cbd5e1; opacity: 0.65; }
-
-    .map-controls {
-      position: absolute;
-      right: 12px;
-      bottom: 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      z-index: 10;
-    }
-
-    .map-ctrl-btn {
-      width: 38px;
-      height: 38px;
-      border-radius: 9px;
-      border: 1px solid var(--border);
-      background: rgba(255, 255, 255, 0.95);
-      color: var(--text);
-      font-size: 1.15rem;
-      font-weight: 700;
-      cursor: pointer;
-      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.12);
-      display: grid;
-      place-items: center;
-    }
-
-    .map-ctrl-btn:hover {
-      background: var(--primary);
-      color: #fff;
-      border-color: var(--primary);
-    }
-
-    .map-loading {
-      position: absolute;
-      inset: 0;
-      display: grid;
-      place-items: center;
-      background: rgba(219, 234, 254, 0.92);
-      font-weight: 700;
-      color: var(--primary);
-      z-index: 15;
-    }
-
-    .round-complete-box {
-      display: none;
-      margin-top: 1rem;
-      padding: 1.25rem;
-      border-radius: 12px;
-      background: var(--success-bg);
-      border: 1px solid #86efac;
-      color: #14532d;
-      text-align: center;
-    }
-
-    .round-complete-box.visible { display: block; }
-
-    /* Pie de página */
     footer {
-      background: var(--surface);
+      max-width: 1200px;
+      margin: 2rem auto 0;
+      padding: 1.5rem 1rem;
       border-top: 1px solid var(--border);
-      padding: 1.5rem 1.25rem;
-      margin-top: auto;
-    }
-
-    .footer-container {
-      max-width: 1280px;
-      margin: 0 auto;
+      color: var(--muted);
+      font-size: 0.9rem;
       display: flex;
       flex-wrap: wrap;
-      align-items: center;
       justify-content: space-between;
       gap: 1rem;
-      font-size: 0.9rem;
-      color: var(--text-muted);
     }
 
-    .footer-links {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 1rem;
-    }
-
-    .footer-links a {
-      color: var(--primary);
-      text-decoration: none;
-      font-weight: 600;
-    }
-
-    .footer-links a:hover { text-decoration: underline; }
-
-    .cookie-settings-link {
-      background: none;
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      padding: 0.3rem 0.75rem;
-      font-size: 0.84rem;
-      font-weight: 600;
-      color: var(--text);
-      cursor: pointer;
-    }
-
-    .cookie-settings-link:hover {
-      border-color: var(--primary);
-      color: var(--primary);
-    }
-
-    /* Banner de consentimiento de cookies */
     .cookie-banner {
       position: fixed;
+      bottom: 1rem;
       left: 1rem;
       right: 1rem;
-      bottom: 1rem;
-      max-width: 960px;
+      max-width: 720px;
       margin: 0 auto;
-      background: #0f172a;
-      color: #f8fafc;
-      border-radius: 14px;
-      padding: 1.15rem 1.35rem;
-      box-shadow: 0 20px 35px rgba(0, 0, 0, 0.28);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.16);
+      border-radius: var(--radius);
+      padding: 1rem;
       z-index: 100;
       display: none;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
     }
 
-    .cookie-banner.visible { display: flex; }
-
-    .cookie-banner p {
-      flex: 1 1 420px;
-      font-size: 0.9rem;
-      color: #e2e8f0;
-    }
-
-    .cookie-banner a {
-      color: #38bdf8;
-      text-decoration: underline;
-    }
-
-    .cookie-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.6rem;
-    }
-
-    .btn-cookie-accept {
-      background: #22c55e;
-      color: #052e16;
-      border: none;
-      border-radius: 8px;
-      padding: 0.55rem 1rem;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    .btn-cookie-reject {
-      background: transparent;
-      color: #f8fafc;
-      border: 1px solid #64748b;
-      border-radius: 8px;
-      padding: 0.55rem 1rem;
-      font-weight: 600;
-      cursor: pointer;
-    }
+    .cookie-banner.visible { display: block; }
   </style>
 </head>
 <body>
-
-  <header>
-    <div class="nav-container">
+  <header class="topbar">
+    <div class="topbar-inner">
       <a class="brand" href="#inicio" onclick="event.preventDefault(); switchView('home')" role="button" tabindex="0">
         <span class="brand-icon" aria-hidden="true">🌍</span>
         <span>GeoAtlas</span>
       </a>
-      <nav class="main-menu" aria-label="Navegación principal">
-        <button class="nav-btn active" id="nav-home" onclick="switchView('home')">Inicio</button>
-        <button class="nav-btn" id="nav-learn" onclick="switchView('learn')">Aprende</button>
-        <button class="nav-btn" id="nav-atlas" onclick="switchView('atlas')">Atlas Interactivo</button>
-        <button class="nav-btn" id="nav-profiles" onclick="switchView('profiles')">Fichas de Países</button>
-        <button class="nav-btn" id="nav-countries" onclick="switchView('countries')">Países del Mundo</button>
-        <button class="nav-btn" id="nav-capitals" onclick="switchView('capitals')">Capitales por Continente</button>
-        <button class="nav-btn" id="nav-games" onclick="switchView('games')">Más Juegos</button>
+      <nav class="nav-group" aria-label="Navegación principal">
+        <button type="button" class="nav-btn active" id="nav-home" onclick="switchView('home')">Inicio</button>
+        <button type="button" class="nav-btn" id="nav-learn" onclick="switchView('learn')">Aprende</button>
+        <button type="button" class="nav-btn" id="nav-atlas" onclick="switchView('atlas')">Atlas Interactivo</button>
+        <button type="button" class="nav-btn" id="nav-profiles" onclick="switchView('profiles')">Fichas de Países</button>
+        <button type="button" class="nav-btn" id="nav-countries" onclick="switchView('countries')">Países del Mundo</button>
+        <button type="button" class="nav-btn" id="nav-capitals" onclick="switchView('capitals')">Capitales por Continente</button>
+        <button type="button" class="nav-btn" id="nav-games" onclick="switchView('games')">Más Juegos</button>
       </nav>
     </div>
   </header>
 
   <main>
-    <!-- VISTA 1: INICIO (GEOATLAS 2.0) -->
+    <!-- INICIO -->
     <section id="view-home" class="view active">
-      <div class="hero">
-        <span class="hero-badge">GeoAtlas 2.0 · Plataforma Educativa Integral de Geografía</span>
-        <h1>GeoAtlas: Juegos de Geografía y Mapas Interactivos del Mundo</h1>
-        <div class="hero-tagline">Explora el mundo. Aprende geografía. Descubre el planeta</div>
-        <p>
-          Una plataforma educativa para aprender geografía mundial con juegos de geografía, juegos de capitales del mundo, juegos de países y juegos de banderas, además de mapas interactivos de países, capas temáticas y fichas detalladas.
-        </p>
-        <div style="display:flex; flex-wrap:wrap; gap:0.75rem;">
-          <button class="btn-primary" onclick="switchView('learn')">Explorar Aprende</button>
-          <button class="btn-secondary" onclick="switchView('atlas')">Abrir Atlas Interactivo</button>
-          <button class="btn-secondary" onclick="switchView('profiles')">Ver Fichas de Países</button>
-          <button class="btn-secondary" onclick="switchView('games')">Descubrir Más Juegos</button>
+      <div class="card">
+        <h1>GeoAtlas — Juegos Educativos de Geografía Mundial</h1>
+        <p>Practica con mapas interactivos, capitales por continente, banderas, fichas de países y lecciones de geografía.</p>
+        <div style="display:flex; flex-wrap:wrap; gap:0.6rem; margin-top:1rem;">
+          <button type="button" class="btn-primary" onclick="switchView('countries')">Iniciar Países del Mundo</button>
+          <button type="button" class="btn-primary" onclick="switchView('capitals')">Iniciar Capitales por Continente</button>
+          <button type="button" class="btn-secondary" onclick="switchView('learn')">Explorar Aprende</button>
+          <button type="button" class="btn-secondary" onclick="switchView('atlas')">Abrir Atlas Interactivo</button>
+          <button type="button" class="btn-secondary" onclick="switchView('profiles')">Ver Fichas de Países</button>
+          <button type="button" class="btn-secondary" onclick="openSpecificNewGame('flags')">Adivina la Bandera</button>
+          <button type="button" class="btn-secondary" onclick="switchView('games')">Descubrir Más Juegos</button>
         </div>
       </div>
 
-      <div class="v2-section-heading">
-        <h2>Accesos rápidos para aprender geografía mundial</h2>
-        <p>Accede a lecciones para aprender geografía mundial, mapas interactivos de países, enciclopedia de estados y juegos de geografía.</p>
-      </div>
-
-      <div class="v2-quick-grid">
-        <article class="v2-info-card">
-          <span class="v2-badge v2-badge-green">4 Categorías · 23 Temas</span>
-          <h3>Aprende Geografía Mundial</h3>
-          <p>Lecciones para aprender geografía mundial con ejemplos reales, distinción entre datos exactos y aproximados y minicuestionarios en Geografía Física, Política, Humana y Económica. <a href="?modo=learn" onclick="event.preventDefault(); switchView('learn')" style="color:var(--primary); font-weight:600; text-decoration:none;">Ver lecciones</a>.</p>
-          <button class="btn-secondary" onclick="switchView('learn')">Ir a Aprende</button>
-        </article>
-        <article class="v2-info-card">
-          <span class="v2-badge v2-badge-blue">8 Capas Temáticas</span>
-          <h3>Atlas Interactivo y Mapas de Países</h3>
-          <p>Explora mapas interactivos de países y capas político, físico, de continentes, océanos, cordilleras, ríos, climas y densidad de población con leyenda. <a href="?modo=atlas" onclick="event.preventDefault(); switchView('atlas')" style="color:var(--primary); font-weight:600; text-decoration:none;">Explorar atlas</a>.</p>
-          <button class="btn-secondary" onclick="switchView('atlas')">Ir al Atlas</button>
-        </article>
-        <article class="v2-info-card">
-          <span class="v2-badge v2-badge-amber">Enciclopedia y Buscador</span>
-          <h3>Fichas de Países y Banderas</h3>
-          <p>Consulta bandera, capital, continente, superficie, población aproximada con fecha de referencia, idiomas, moneda, relieve, clima y curiosidades. <a href="?modo=profiles" onclick="event.preventDefault(); switchView('profiles')" style="color:var(--primary); font-weight:600; text-decoration:none;">Abrir fichas</a>.</p>
-          <button class="btn-secondary" onclick="switchView('profiles')">Ver Fichas</button>
-        </article>
-        <article class="v2-info-card">
-          <span class="v2-badge v2-badge-teal">9 Juegos en Total</span>
-          <h3>Juegos de Geografía, Capitales y Banderas</h3>
-          <p>Incluye juegos de países y juegos de capitales del mundo sobre el mapa, además de juegos de banderas, ríos, cordilleras, océanos, ciudades, V/F y desafío mundial. <a href="?modo=games" onclick="event.preventDefault(); switchView('games')" style="color:var(--primary); font-weight:600; text-decoration:none;">Ver retos</a>.</p>
-          <button class="btn-secondary" onclick="switchView('games')">Ver Todos los Juegos</button>
-        </article>
-      </div>
-
-      <div class="v2-section-heading">
-        <h2>Juegos de geografía destacados</h2>
-        <p>Juegos de países, juegos de capitales del mundo sobre mapas interactivos de países y juegos de banderas para practicar.</p>
-      </div>
-
-      <div class="cards-grid">
-        <article class="game-card">
-          <div>
-            <span class="game-card-tag">Juegos de Países · Mapa Mundial</span>
-            <h2>Países del Mundo</h2>
-            <p>
-              Uno de los juegos de países más completos sobre mapas interactivos de países: localiza cada Estado en el mapamundi sin repeticiones hasta completar la ronda.
-            </p>
-          </div>
-          <button class="btn-primary" onclick="switchView('countries')">Iniciar Países del Mundo</button>
-        </article>
-
-        <article class="game-card">
-          <div>
-            <span class="game-card-tag">Juegos de Capitales del Mundo · Por Continentes</span>
-            <h2>Capitales por Continente</h2>
-            <p>
-              Practica juegos de capitales del mundo en Europa, Asia, África, América del Norte, América del Sur y Oceanía pulsando sobre cada país en el mapa.
-            </p>
-          </div>
-          <button class="btn-primary" onclick="switchView('capitals')">Iniciar Capitales por Continente</button>
-        </article>
-
-        <article class="game-card">
-          <div>
-            <span class="game-card-tag">Juegos de Banderas · Identificación</span>
-            <h2>Adivina la Bandera</h2>
-            <p>
-              Pon a prueba tu memoria en estos juegos de banderas: identifica el país correspondiente entre cuatro opciones y repasa su capital y continente.
-            </p>
-          </div>
-          <button class="btn-primary" onclick="openSpecificNewGame('flags')">Jugar Adivina la Bandera</button>
-        </article>
-      </div>
-
-      <div class="v2-two-col">
-        <section class="v2-panel">
-          <span class="v2-badge v2-badge-blue">Mapas y Curiosidades Geográficas</span>
-          <h2 style="margin-top:0.5rem; margin-bottom:0.65rem;">Datos curiosos del planeta</h2>
-          <ul class="v2-curiosity-list">
-            <li><strong>El río más largo (debate científico):</strong> El Nilo (aprox. 6.650 km) y el Amazonas (aprox. 6.400–6.992 km según el criterio de nacimiento y medición) concentran el debate geográfico tradicional, mientras que el Amazonas destaca con claridad como el mayor por caudal.</li>
-            <li><strong>Fronteras terrestres más largas:</strong> La frontera entre Canadá y Estados Unidos (incluyendo Alaska) supera los 8.800 km aproximados en su conjunto, siendo la frontera continua más larga la de Canadá y Estados Unidos en América del Norte continental.</li>
-            <li><strong>Densidad y distribución:</strong> Más de la mitad de la población mundial vive en Asia, mientras que territorios como Groenlandia o el interior de Australia presentan densidades extremadamente bajas.</li>
-          </ul>
-        </section>
-
-        <section class="v2-panel">
-          <span class="v2-badge v2-badge-green">Novedades de GeoAtlas 2.0</span>
-          <h2 style="margin-top:0.5rem; margin-bottom:0.65rem;">Qué incorpora esta evolución</h2>
-          <ul class="v2-curiosity-list">
-            <li><strong>Sección Aprende con 23 temas:</strong> Organizada en Geografía Física, Política, Humana y Económica, cada tema incluye ejemplos, aclaración de datos exactos frente a aproximados y minicuestionario.</li>
-            <li><strong>Atlas Interactivo de 8 capas:</strong> Explora mapas temáticos sobre el mapa base mundial con leyenda dinámica y explicación de cada variable geográfica.</li>
-            <li><strong>7 nuevos juegos interactivos:</strong> Adivina la bandera, Localiza los ríos, Encuentra las cordilleras, Identifica los océanos y mares, Localiza grandes ciudades, Verdadero o falso geográfico y Desafío mundial de preguntas.</li>
-          </ul>
-        </section>
-      </div>
-
-      <section class="edu-section" aria-labelledby="edu-title" style="margin-top:1.5rem;">
-        <h2 id="edu-title">Metodología y recursos educativos de GeoAtlas</h2>
-        <p>
-          El aprendizaje visual sobre mapas interactivos facilita la memoria espacial y permite relacionar fronteras, regiones geográficas, rasgos físicos y capitales administrativas sin necesidad de registros ni configuraciones complejas.
-        </p>
-        <div class="edu-grid">
-          <div class="edu-item">
-            <h3>Cartografía interactiva real</h3>
-            <p>Cada país es un polígono independiente con zoom fluido y soporte táctil para localizar tanto grandes extensiones como países insulares o de menor superficie.</p>
-          </div>
-          <div class="edu-item">
-            <h3>Práctica sin repeticiones</h3>
-            <p>El sistema organiza rondas completas aleatorias para que practiques el 100 % de los territorios incluidos antes de reiniciar el ciclo.</p>
-          </div>
-          <div class="edu-item">
-            <h3>Accesible en móvil y ordenador</h3>
-            <p>Interfaz adaptable a cualquier tamaño de pantalla, ideal para el estudio individual o como apoyo visual en el aula.</p>
-          </div>
+      <div class="grid-4">
+        <div class="card">
+          <h2>Aprende</h2>
+          <p>Conceptos clave de geografía física, política, humana y económica con cuestionarios.</p>
+          <a href="?modo=learn" onclick="event.preventDefault(); switchView('learn')">Ver lecciones</a>
+          <div style="margin-top:0.6rem;"><button type="button" class="btn-secondary" onclick="switchView('learn')">Ir a Aprende</button></div>
         </div>
-      </section>
+        <div class="card">
+          <h2>Atlas Interactivo</h2>
+          <p>Explora capas temáticas y consulta información de los países en el mapa.</p>
+          <a href="?modo=atlas" onclick="event.preventDefault(); switchView('atlas')">Explorar atlas</a>
+          <div style="margin-top:0.6rem;"><button type="button" class="btn-secondary" onclick="switchView('atlas')">Ir al Atlas</button></div>
+        </div>
+        <div class="card">
+          <h2>Fichas de Países</h2>
+          <p>Consulta datos geográficos, capitales, continentes y banderas.</p>
+          <a href="?modo=profiles" onclick="event.preventDefault(); switchView('profiles')">Abrir fichas</a>
+          <div style="margin-top:0.6rem;"><button type="button" class="btn-secondary" onclick="switchView('profiles')">Ver Fichas</button></div>
+        </div>
+        <div class="card">
+          <h2>Más Juegos</h2>
+          <p>Retos de banderas, verdadero o falso, ríos, cordilleras, océanos y ciudades.</p>
+          <a href="?modo=games" onclick="event.preventDefault(); switchView('games')">Ver retos</a>
+          <div style="margin-top:0.6rem;"><button type="button" class="btn-secondary" onclick="switchView('games')">Ver Todos los Juegos</button></div>
+        </div>
+      </div>
     </section>
 
-    <!-- VISTA 2: JUEGO PAÍSES DEL MUNDO (PROTEGIDO / CONSERVADO) -->
+    <!-- JUEGO 1: PAÍSES DEL MUNDO -->
     <section id="view-countries" class="view">
-      <div class="game-panel">
-        <div class="game-header">
-          <div class="prompt-box">
-            <span class="prompt-label">Localiza en el mapa el país:</span>
-            <div class="prompt-target" id="country-target-name">Cargando mapa...</div>
-          </div>
-          <div class="status-area">
-            <span class="progress-pill" id="country-progress">0 / 0</span>
-            <button class="btn-secondary" onclick="locateHint('countries')" title="Acercar la zona del país">Acercar zona</button>
-            <button class="btn-secondary" onclick="resetCountriesGame()">Reiniciar ronda</button>
-          </div>
-        </div>
-
-        <div class="feedback-banner" id="country-feedback" role="status" aria-live="polite">
-          <span>Pulsa directamente sobre el país correspondiente en el mapa.</span>
-        </div>
-
-        <div class="map-wrapper" id="map-wrapper-countries">
-          <div class="map-loading" id="loading-countries">Cargando cartografía mundial...</div>
-          <svg class="world-map" id="svg-countries" aria-label="Mapa mundial interactivo de países"></svg>
-          <div class="map-controls">
-            <button class="map-ctrl-btn" onclick="zoomMap('countries', 1.5)" aria-label="Acercar">+</button>
-            <button class="map-ctrl-btn" onclick="zoomMap('countries', 0.67)" aria-label="Alejar">−</button>
-            <button class="map-ctrl-btn" onclick="resetZoom('countries')" aria-label="Centrar mapa">⌂</button>
-          </div>
-        </div>
-
-        <div class="round-complete-box" id="countries-complete">
-          <h3>¡Has completado todos los países del mundo!</h3>
-          <p style="margin: 0.4rem 0 0.9rem;">Has localizado correctamente todos los países de la ronda.</p>
-          <button class="btn-primary" onclick="resetCountriesGame()">Jugar otra ronda completa</button>
-        </div>
-      </div>
-    </section>
-
-    <!-- VISTA 3: JUEGO CAPITALES POR CONTINENTE (PROTEGIDO / CONSERVADO) -->
-    <section id="view-capitals" class="view">
-      <div class="game-panel">
-        <div class="continent-bar" role="group" aria-label="Seleccionar continente">
-          <button class="continent-btn active" data-continent="Europa" onclick="selectContinent('Europa')">Europa</button>
-          <button class="continent-btn" data-continent="Asia" onclick="selectContinent('Asia')">Asia</button>
-          <button class="continent-btn" data-continent="África" onclick="selectContinent('África')">África</button>
-          <button class="continent-btn" data-continent="América del Norte" onclick="selectContinent('América del Norte')">América del Norte</button>
-          <button class="continent-btn" data-continent="América del Sur" onclick="selectContinent('América del Sur')">América del Sur</button>
-          <button class="continent-btn" data-continent="Oceanía" onclick="selectContinent('Oceanía')">Oceanía</button>
-        </div>
-
-        <div class="game-header">
-          <div class="prompt-box">
-            <span class="prompt-label">Pulsa sobre el país cuya capital es:</span>
-            <div class="prompt-target" id="capital-target-name">Cargando mapa...</div>
-          </div>
-          <div class="status-area">
-            <span class="progress-pill" id="capital-progress">0 / 0</span>
-            <button class="btn-secondary" onclick="locateHint('capitals')" title="Acercar la zona del país">Acercar zona</button>
-            <button class="btn-secondary" onclick="resetCapitalsGame()">Reiniciar continente</button>
-          </div>
-        </div>
-
-        <div class="feedback-banner" id="capital-feedback" role="status" aria-live="polite">
-          <span>Selecciona en el mapa el país al que pertenece esta capital.</span>
-        </div>
-
-        <div class="map-wrapper" id="map-wrapper-capitals">
-          <div class="map-loading" id="loading-capitals">Cargando cartografía mundial...</div>
-          <svg class="world-map" id="svg-capitals" aria-label="Mapa mundial interactivo de capitales"></svg>
-          <div class="map-controls">
-            <button class="map-ctrl-btn" onclick="zoomMap('capitals', 1.5)" aria-label="Acercar">+</button>
-            <button class="map-ctrl-btn" onclick="zoomMap('capitals', 0.67)" aria-label="Alejar">−</button>
-            <button class="map-ctrl-btn" onclick="focusContinent(currentContinent)" aria-label="Centrar continente">⌂</button>
-          </div>
-        </div>
-
-        <div class="round-complete-box" id="capitals-complete">
-          <h3 id="capitals-complete-title">¡Continente completado!</h3>
-          <p style="margin: 0.4rem 0 0.9rem;">Has acertado todas las capitales de este continente.</p>
-          <button class="btn-primary" onclick="resetCapitalsGame()">Repetir este continente</button>
-        </div>
-      </div>
-    </section>
-
-    <!-- VISTA 4: APRENDE (GEOATLAS 2.0) -->
-    <section id="view-learn" class="view">
-      <div class="v2-panel">
-        <div class="v2-section-top">
+      <div class="card">
+        <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:0.75rem;">
           <div>
-            <span class="v2-badge v2-badge-green">Sección Educativa · Aprende</span>
-            <h2>Aprender geografía mundial: Física, Política, Humana y Económica</h2>
-            <p>Selecciona una categoría y un tema para aprender geografía mundial con explicaciones detalladas, ejemplos, distinción de datos exactos y aproximados y minicuestionario.</p>
-          </div>
-          <button class="btn-secondary" onclick="switchView('home')">← Volver a Inicio</button>
-        </div>
-
-        <div class="v2-cat-tabs" role="tablist" aria-label="Categorías de Geografía">
-          <button class="v2-cat-tab active" data-cat="fisica" onclick="selectLearnCategory('fisica')">Geografía Física</button>
-          <button class="v2-cat-tab" data-cat="politica" onclick="selectLearnCategory('politica')">Geografía Política</button>
-          <button class="v2-cat-tab" data-cat="humana" onclick="selectLearnCategory('humana')">Geografía Humana</button>
-          <button class="v2-cat-tab" data-cat="economica" onclick="selectLearnCategory('economica')">Geografía Económica</button>
-        </div>
-
-        <div class="v2-learn-layout">
-          <aside class="v2-topic-list" id="learn-topic-list" aria-label="Temas de la categoría"></aside>
-          <article class="v2-topic-detail" id="learn-topic-detail" aria-live="polite"></article>
-        </div>
-      </div>
-    </section>
-
-    <!-- VISTA 5: ATLAS INTERACTIVO (GEOATLAS 2.0) -->
-    <section id="view-atlas" class="view">
-      <div class="v2-panel">
-        <div class="v2-section-top">
-          <div>
-            <span class="v2-badge v2-badge-blue">Exploración Cartográfica · Atlas Interactivo</span>
-            <h2>Atlas temático y mapas interactivos de países</h2>
-            <p>Explora mapas interactivos de países con 8 capas temáticas, haz zoom y selecciona cualquier territorio para consultar su capital y continente.</p>
-          </div>
-          <button class="btn-secondary" onclick="switchView('home')">← Volver a Inicio</button>
-        </div>
-
-        <div class="v2-atlas-layers" role="group" aria-label="Capas del Atlas Interactivo">
-          <button class="v2-layer-btn active" data-layer="politico" onclick="selectAtlasLayer('politico')">Mapa político mundial</button>
-          <button class="v2-layer-btn" data-layer="fisico" onclick="selectAtlasLayer('fisico')">Mapa físico mundial</button>
-          <button class="v2-layer-btn" data-layer="continentes" onclick="selectAtlasLayer('continentes')">Mapa de continentes</button>
-          <button class="v2-layer-btn" data-layer="oceanos" onclick="selectAtlasLayer('oceanos')">Mapa de océanos</button>
-          <button class="v2-layer-btn" data-layer="cordilleras" onclick="selectAtlasLayer('cordilleras')">Mapa de cordilleras</button>
-          <button class="v2-layer-btn" data-layer="rios" onclick="selectAtlasLayer('rios')">Mapa de ríos</button>
-          <button class="v2-layer-btn" data-layer="climas" onclick="selectAtlasLayer('climas')">Mapa de climas</button>
-          <button class="v2-layer-btn" data-layer="poblacion" onclick="selectAtlasLayer('poblacion')">Mapa de densidad de población</button>
-        </div>
-
-        <div class="v2-atlas-grid">
-          <div class="map-wrapper" id="map-wrapper-atlas">
-            <div class="map-loading" id="loading-atlas">Cargando atlas temático...</div>
-            <svg class="world-map" id="svg-atlas" aria-label="Mapa temático interactivo del Atlas"></svg>
-            <div class="map-controls">
-              <button class="map-ctrl-btn" onclick="zoomMap('atlas', 1.5)" aria-label="Acercar">+</button>
-              <button class="map-ctrl-btn" onclick="zoomMap('atlas', 0.67)" aria-label="Alejar">−</button>
-              <button class="map-ctrl-btn" onclick="resetZoom('atlas')" aria-label="Centrar mapa">⌂</button>
-            </div>
-          </div>
-
-          <aside class="v2-atlas-info" id="atlas-layer-info"></aside>
-        </div>
-      </div>
-    </section>
-
-    <!-- VISTA 6: FICHAS DE PAÍSES (GEOATLAS 2.0) -->
-    <section id="view-profiles" class="view">
-      <div class="v2-panel">
-        <div class="v2-section-top">
-          <div>
-            <span class="v2-badge v2-badge-amber">Enciclopedia Geográfica · Fichas de Países</span>
-            <h2>Fichas de países, capitales y banderas</h2>
-            <p>Filtra por continente o busca un país para consultar su bandera, capital, superficie, población aproximada, idiomas, moneda, relieve, clima y curiosidades.</p>
-          </div>
-          <button class="btn-secondary" onclick="switchView('home')">← Volver a Inicio</button>
-        </div>
-
-        <div class="v2-filters-bar">
-          <input type="search" id="profile-search" class="v2-search-input" placeholder="Buscar país o capital (ej. España, Japón, Perú, Kenia)..." oninput="renderCountryProfiles()">
-          <select id="profile-continent" class="v2-select" onchange="renderCountryProfiles()" aria-label="Filtrar fichas por continente">
-            <option value="Todos">Todos los continentes</option>
-            <option value="Europa">Europa</option>
-            <option value="Asia">Asia</option>
-            <option value="África">África</option>
-            <option value="América del Norte">América del Norte</option>
-            <option value="América del Sur">América del Sur</option>
-            <option value="Oceanía">Oceanía</option>
-          </select>
-        </div>
-
-        <div id="profiles-detail-modal" class="v2-profile-detail" style="display:none;"></div>
-        <div class="v2-profiles-grid" id="profiles-grid"></div>
-      </div>
-    </section>
-
-    <!-- VISTA 7: MÁS JUEGOS INTERACTIVOS (GEOATLAS 2.0) -->
-    <section id="view-games" class="view">
-      <div class="v2-panel">
-        <div class="v2-section-top">
-          <div>
-            <span class="v2-badge v2-badge-teal">Revolución de los Juegos · 7 Nuevos Modos</span>
-            <h2>Juegos de geografía, banderas, ríos, cordilleras y ciudades</h2>
-            <p>Además de nuestros juegos de países (<strong>Países del Mundo</strong>) y juegos de capitales del mundo (<strong>Capitales por Continente</strong>), prueba juegos de banderas y retos interactivos con puntuación y explicación.</p>
+            <h2>Países del Mundo</h2>
+            <p>País objetivo: <strong id="country-target-name">—</strong> · Progreso: <strong id="country-progress">0 / 0</strong></p>
           </div>
           <div style="display:flex; flex-wrap:wrap; gap:0.5rem;">
-            <button class="btn-secondary" onclick="switchView('countries')">Ir a Países del Mundo</button>
-            <button class="btn-secondary" onclick="switchView('capitals')">Ir a Capitales por Continente</button>
+            <button type="button" class="btn-secondary" onclick="locateHint('countries')">Pista</button>
+            <button type="button" class="btn-secondary" onclick="zoomMap('countries', 1.5)">Acercar (+)</button>
+            <button type="button" class="btn-secondary" onclick="zoomMap('countries', 0.67)">Alejar (-)</button>
+            <button type="button" class="btn-secondary" onclick="resetZoom('countries')">Centrar</button>
+            <button type="button" class="btn-primary" onclick="resetCountriesGame()">Reiniciar</button>
+            <button type="button" class="btn-secondary" onclick="switchView('home')">← Volver a Inicio</button>
+          </div>
+        </div>
+        <div id="country-feedback" class="feedback-banner">Pulsa sobre el país indicado en el mapa.</div>
+        <div id="countries-complete" class="complete-banner">
+          <h3 id="countries-complete-title">¡Completado!</h3>
+          <button type="button" class="btn-primary" onclick="resetCountriesGame()">Jugar de nuevo</button>
+        </div>
+      </div>
+      <div class="card">
+        <div id="map-countries" class="map-box"></div>
+      </div>
+    </section>
+
+    <!-- JUEGO 2: CAPITALES POR CONTINENTE -->
+    <section id="view-capitals" class="view">
+      <div class="card">
+        <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:0.75rem;">
+          <div>
+            <h2>Capitales por Continente</h2>
+            <p>Capital objetivo: <strong id="capital-target-name">—</strong> · Progreso: <strong id="capital-progress">0 / 0</strong></p>
+          </div>
+          <div style="display:flex; flex-wrap:wrap; gap:0.5rem;">
+            <button type="button" class="btn-secondary" onclick="locateHint('capitals')">Pista</button>
+            <button type="button" class="btn-secondary" onclick="focusContinent(currentContinent)">Enfocar continente</button>
+            <button type="button" class="btn-secondary" onclick="zoomMap('capitals', 1.5)">Acercar (+)</button>
+            <button type="button" class="btn-secondary" onclick="zoomMap('capitals', 0.67)">Alejar (-)</button>
+            <button type="button" class="btn-secondary" onclick="resetZoom('capitals')">Centrar</button>
+            <button type="button" class="btn-primary" onclick="resetCapitalsGame()">Reiniciar</button>
+            <button type="button" class="btn-secondary" onclick="switchView('home')">← Volver a Inicio</button>
           </div>
         </div>
 
-        <div class="v2-games-selector" role="group" aria-label="Elegir juego adicional">
-          <button class="v2-game-tab active" data-newgame="flags" onclick="selectNewGame('flags')">Adivina la bandera</button>
-          <button class="v2-game-tab" data-newgame="rivers" onclick="selectNewGame('rivers')">Localiza los ríos</button>
-          <button class="v2-game-tab" data-newgame="ranges" onclick="selectNewGame('ranges')">Encuentra las cordilleras</button>
-          <button class="v2-game-tab" data-newgame="oceans" onclick="selectNewGame('oceans')">Identifica los océanos y mares</button>
-          <button class="v2-game-tab" data-newgame="cities" onclick="selectNewGame('cities')">Localiza grandes ciudades</button>
-          <button class="v2-game-tab" data-newgame="truefalse" onclick="selectNewGame('truefalse')">Verdadero o falso geográfico</button>
-          <button class="v2-game-tab" data-newgame="challenge" onclick="selectNewGame('challenge')">Desafío mundial de preguntas</button>
+        <div style="display:flex; flex-wrap:wrap; gap:0.4rem; margin-top:0.9rem;">
+          <button type="button" class="btn-secondary continent-btn active" data-continent="Europa" onclick="selectContinent('Europa')">Europa</button>
+          <button type="button" class="btn-secondary continent-btn" data-continent="Asia" onclick="selectContinent('Asia')">Asia</button>
+          <button type="button" class="btn-secondary continent-btn" data-continent="África" onclick="selectContinent('África')">África</button>
+          <button type="button" class="btn-secondary continent-btn" data-continent="América del Norte" onclick="selectContinent('América del Norte')">América del Norte</button>
+          <button type="button" class="btn-secondary continent-btn" data-continent="América del Sur" onclick="selectContinent('América del Sur')">América del Sur</button>
+          <button type="button" class="btn-secondary continent-btn" data-continent="Oceanía" onclick="selectContinent('Oceanía')">Oceanía</button>
         </div>
 
-        <div id="new-game-stage" class="v2-game-stage" aria-live="polite"></div>
+        <div id="capital-feedback" class="feedback-banner">Selecciona el país al que pertenece la capital indicada.</div>
+        <div id="capitals-complete" class="complete-banner">
+          <h3 id="capitals-complete-title">¡Continente completado!</h3>
+          <button type="button" class="btn-primary" onclick="resetCapitalsGame()">Repetir continente</button>
+        </div>
       </div>
+      <div class="card">
+        <div id="map-capitals" class="map-box"></div>
+      </div>
+    </section>
+
+    <!-- APRENDE -->
+    <section id="view-learn" class="view">
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;">
+          <h2>Aprende Geografía</h2>
+          <button type="button" class="btn-secondary" onclick="switchView('home')">← Volver a Inicio</button>
+        </div>
+        <div style="display:flex; flex-wrap:wrap; gap:0.4rem; margin-top:0.75rem;">
+          <button type="button" class="btn-secondary" onclick="selectLearnCategory('fisica')">Geografía Física</button>
+          <button type="button" class="btn-secondary" onclick="selectLearnCategory('politica')">Geografía Política</button>
+          <button type="button" class="btn-secondary" onclick="selectLearnCategory('humana')">Geografía Humana</button>
+          <button type="button" class="btn-secondary" onclick="selectLearnCategory('economica')">Geografía Económica</button>
+        </div>
+      </div>
+      <div id="learn-content" class="card"></div>
+    </section>
+
+    <!-- ATLAS INTERACTIVO -->
+    <section id="view-atlas" class="view">
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;">
+          <h2>Atlas Interactivo</h2>
+          <div style="display:flex; flex-wrap:wrap; gap:0.4rem;">
+            <button type="button" class="btn-secondary" onclick="zoomMap('atlas', 1.5)">Acercar (+)</button>
+            <button type="button" class="btn-secondary" onclick="zoomMap('atlas', 0.67)">Alejar (-)</button>
+            <button type="button" class="btn-secondary" onclick="resetZoom('atlas')">Centrar</button>
+            <button type="button" class="btn-secondary" onclick="switchView('home')">← Volver a Inicio</button>
+          </div>
+        </div>
+        <div style="display:flex; flex-wrap:wrap; gap:0.4rem; margin-top:0.75rem;">
+          <button type="button" class="btn-secondary" onclick="selectAtlasLayer('politico')">Político</button>
+          <button type="button" class="btn-secondary" onclick="selectAtlasLayer('continentes')">Continentes</button>
+          <button type="button" class="btn-secondary" onclick="selectAtlasLayer('fisico')">Relieve / Físico</button>
+          <button type="button" class="btn-secondary" onclick="selectAtlasLayer('cordilleras')">Cordilleras</button>
+          <button type="button" class="btn-secondary" onclick="selectAtlasLayer('rios')">Ríos</button>
+          <button type="button" class="btn-secondary" onclick="selectAtlasLayer('oceanos')">Océanos</button>
+          <button type="button" class="btn-secondary" onclick="selectAtlasLayer('climas')">Climas</button>
+          <button type="button" class="btn-secondary" onclick="selectAtlasLayer('poblacion')">Población</button>
+        </div>
+      </div>
+      <div id="atlas-layer-panel" class="card"></div>
+      <div class="card">
+        <div id="map-atlas" class="map-box"></div>
+      </div>
+    </section>
+
+    <!-- FICHAS DE PAÍSES -->
+    <section id="view-profiles" class="view">
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;">
+          <h2>Fichas de Países</h2>
+          <button type="button" class="btn-secondary" onclick="switchView('home')">← Volver a Inicio</button>
+        </div>
+      </div>
+      <div id="profiles-container" class="card"></div>
+    </section>
+
+    <!-- MÁS JUEGOS -->
+    <section id="view-games" class="view">
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;">
+          <h2>Más Juegos</h2>
+          <div style="display:flex; flex-wrap:wrap; gap:0.4rem;">
+            <button type="button" class="btn-secondary" onclick="switchView('countries')">Ir a Países del Mundo</button>
+            <button type="button" class="btn-secondary" onclick="switchView('capitals')">Ir a Capitales por Continente</button>
+            <button type="button" class="btn-secondary" onclick="switchView('home')">← Volver a Inicio</button>
+          </div>
+        </div>
+        <div style="display:flex; flex-wrap:wrap; gap:0.4rem; margin-top:0.75rem;">
+          <button type="button" class="btn-secondary" onclick="selectNewGame('flags')">Adivina la Bandera</button>
+          <button type="button" class="btn-secondary" onclick="selectNewGame('truefalse')">Verdadero o Falso</button>
+          <button type="button" class="btn-secondary" onclick="selectNewGame('rivers')">Ríos del Mundo</button>
+          <button type="button" class="btn-secondary" onclick="selectNewGame('ranges')">Cordilleras</button>
+          <button type="button" class="btn-secondary" onclick="selectNewGame('oceans')">Océanos y Mares</button>
+          <button type="button" class="btn-secondary" onclick="selectNewGame('cities')">Grandes Ciudades</button>
+          <button type="button" class="btn-secondary" onclick="selectNewGame('challenge')">Reto Combinado</button>
+        </div>
+      </div>
+      <div id="new-game-stage" class="card"></div>
     </section>
   </main>
 
   <footer>
-    <div class="footer-container">
-      <div>
-        <strong>GeoAtlas</strong> · Plataforma educativa interactiva de geografía mundial.
-      </div>
-      <div class="footer-links">
-        <a href="pol_tica_de_privacidad_geoatlas.html">Política de privacidad</a>
-        <a href="pol_tica_de_cookies_geoatlas.html">Política de cookies</a>
-        <a href="contacto_geoatlas.html">Contacto</a>
-        <button type="button" class="cookie-settings-link" onclick="openCookieBanner()">Configurar cookies</button>
-      </div>
+    <div>GeoAtlas — Juegos Educativos de Geografía Mundial</div>
+    <div style="display:flex; flex-wrap:wrap; gap:1rem;">
+      <a href="pol_tica_de_privacidad_geoatlas.html">Política de privacidad</a>
+      <a href="pol_tica_de_cookies_geoatlas.html">Política de cookies</a>
+      <a href="contacto_geoatlas.html">Contacto</a>
+      <button type="button" class="btn-secondary" onclick="openCookieBanner()">Preferencias de cookies</button>
     </div>
   </footer>
 
-  <!-- Aviso de consentimiento de cookies -->
-  <div class="cookie-banner" id="cookie-banner" role="dialog" aria-live="polite" aria-label="Configuración de cookies">
-    <p>
-      En <strong>GeoAtlas</strong> utilizamos almacenamiento técnico necesario para recordar tu preferencia y, solo si lo aceptas, <strong>Google Analytics 4</strong> para medir de forma agregada el uso educativo de la web. Puedes consultar los detalles en nuestra <a href="pol_tica_de_cookies_geoatlas.html">Política de cookies</a>.
-    </p>
-    <div class="cookie-actions">
-      <button type="button" class="btn-cookie-reject" onclick="setCookieConsent('denied')">Rechazar</button>
-      <button type="button" class="btn-cookie-accept" onclick="setCookieConsent('granted')">Aceptar análisis</button>
+  <div id="cookie-banner" class="cookie-banner" role="dialog" aria-label="Preferencias de cookies">
+    <p style="margin:0 0 0.75rem;">Utilizamos cookies analíticas para mejorar GeoAtlas. Consulta nuestra <a href="pol_tica_de_cookies_geoatlas.html">Política de cookies</a>.</p>
+    <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+      <button type="button" class="btn-primary" onclick="setCookieConsent('granted')">Aceptar cookies</button>
+      <button type="button" class="btn-secondary" onclick="setCookieConsent('denied')">Rechazar cookies</button>
     </div>
   </div>
 
   <script>
-    /* =========================================================================
-       1. GESTIÓN DE CONSENTIMIENTO DE COOKIES (CONSENT MODE V2)
-       ========================================================================= */
     const CONSENT_KEY = 'geoatlas_consent_v1';
 
     function clearAnalyticsCookies() {
-      const cookies = document.cookie.split(';');
+      const cookies = document.cookie ? document.cookie.split(';') : [];
       for (let i = 0; i < cookies.length; i++) {
         const name = cookies[i].split('=')[0].trim();
-        if (name.startsWith('_ga') || name.startsWith('_gid')) {
-          document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-          document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.' + location.hostname + ';';
+        if (name === '_ga' || name.startsWith('_ga_')) {
+          document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
         }
       }
     }
 
-    function setCookieConsent(state) {
+    function setCookieConsent(status) {
       try {
-        localStorage.setItem(CONSENT_KEY, state);
+        localStorage.setItem(CONSENT_KEY, status);
       } catch (e) {}
 
       if (typeof gtag === 'function') {
         gtag('consent', 'update', {
-          'analytics_storage': state === 'granted' ? 'granted' : 'denied',
+          'analytics_storage': status === 'granted' ? 'granted' : 'denied',
           'ad_storage': 'denied',
           'ad_user_data': 'denied',
           'ad_personalization': 'denied'
         });
       }
 
-      if (state !== 'granted') {
+      if (status !== 'granted') {
         clearAnalyticsCookies();
       }
 
-      document.getElementById('cookie-banner').classList.remove('visible');
+      const banner = document.getElementById('cookie-banner');
+      if (banner) banner.classList.remove('visible');
     }
 
     function openCookieBanner() {
-      document.getElementById('cookie-banner').classList.add('visible');
+      const banner = document.getElementById('cookie-banner');
+      if (banner) banner.classList.add('visible');
     }
 
-    (function initCookieBanner() {
-      let current = null;
+    function initCookieBanner() {
+      let existing = null;
       try {
-        current = localStorage.getItem(CONSENT_KEY);
+        existing = localStorage.getItem(CONSENT_KEY);
       } catch (e) {}
-      if (current !== 'granted' && current !== 'denied') {
-        document.getElementById('cookie-banner').classList.add('visible');
-      } else if (current === 'denied') {
-        clearAnalyticsCookies();
+      if (!existing) {
+        openCookieBanner();
       }
-    })();
+    }
 
-    /* =========================================================================
-       2. BASE DE DATOS DE PAÍSES SOBERANOS Y CAPITALES EN ESPAÑOL (ISO 3166-1)
-       ========================================================================= */
+    // Datos de países de referencia
     const COUNTRIES_DATA = [
-      // EUROPA
-      { id: "008", name: "Albania", capital: "Tirana", continent: "Europa" },
-      { id: "276", name: "Alemania", capital: "Berlín", continent: "Europa" },
-      { id: "020", name: "Andorra", capital: "Andorra la Vieja", continent: "Europa" },
-      { id: "040", name: "Austria", capital: "Viena", continent: "Europa" },
-      { id: "056", name: "Bélgica", capital: "Bruselas", continent: "Europa" },
-      { id: "112", name: "Bielorrusia", capital: "Minsk", continent: "Europa" },
-      { id: "070", name: "Bosnia y Herzegovina", capital: "Sarajevo", continent: "Europa" },
-      { id: "100", name: "Bulgaria", capital: "Sofía", continent: "Europa" },
-      { id: "191", name: "Croacia", capital: "Zagreb", continent: "Europa" },
-      { id: "208", name: "Dinamarca", capital: "Copenhague", continent: "Europa" },
-      { id: "703", name: "Eslovaquia", capital: "Bratislava", continent: "Europa" },
-      { id: "705", name: "Eslovenia", capital: "Liubliana", continent: "Europa" },
-      { id: "724", name: "España", capital: "Madrid", continent: "Europa" },
-      { id: "233", name: "Estonia", capital: "Tallin", continent: "Europa" },
-      { id: "246", name: "Finlandia", capital: "Helsinki", continent: "Europa" },
-      { id: "250", name: "Francia", capital: "París", continent: "Europa" },
-      { id: "300", name: "Grecia", capital: "Atenas", continent: "Europa" },
-      { id: "348", name: "Hungría", capital: "Budapest", continent: "Europa" },
-      { id: "372", name: "Irlanda", capital: "Dublín", continent: "Europa" },
-      { id: "352", name: "Islandia", capital: "Reikiavik", continent: "Europa" },
-      { id: "380", name: "Italia", capital: "Roma", continent: "Europa" },
-      { id: "428", name: "Letonia", capital: "Riga", continent: "Europa" },
-      { id: "438", name: "Liechtenstein", capital: "Vaduz", continent: "Europa" },
-      { id: "440", name: "Lituania", capital: "Vilna", continent: "Europa" },
-      { id: "442", name: "Luxemburgo", capital: "Luxemburgo", continent: "Europa" },
-      { id: "807", name: "Macedonia del Norte", capital: "Skopie", continent: "Europa" },
-      { id: "470", name: "Malta", capital: "La Valeta", continent: "Europa" },
-      { id: "498", name: "Moldavia", capital: "Chisináu", continent: "Europa" },
-      { id: "492", name: "Mónaco", capital: "Mónaco", continent: "Europa" },
-      { id: "499", name: "Montenegro", capital: "Podgorica", continent: "Europa" },
-      { id: "578", name: "Noruega", capital: "Oslo", continent: "Europa" },
-      { id: "528", name: "Países Bajos", capital: "Ámsterdam", continent: "Europa" },
-      { id: "616", name: "Polonia", capital: "Varsovia", continent: "Europa" },
-      { id: "620", name: "Portugal", capital: "Lisboa", continent: "Europa" },
-      { id: "826", name: "Reino Unido", capital: "Londres", continent: "Europa" },
-      { id: "203", name: "República Checa", capital: "Praga", continent: "Europa" },
-      { id: "642", name: "Rumanía", capital: "Bucarest", continent: "Europa" },
-      { id: "643", name: "Rusia", capital: "Moscú", continent: "Europa" },
-      { id: "674", name: "San Marino", capital: "San Marino", continent: "Europa" },
-      { id: "688", name: "Serbia", capital: "Belgrado", continent: "Europa" },
-      { id: "752", name: "Suecia", capital: "Estocolmo", continent: "Europa" },
-      { id: "756", name: "Suiza", capital: "Berna", continent: "Europa" },
-      { id: "804", name: "Ucrania", capital: "Kiev", continent: "Europa" },
-      { id: "336", name: "Ciudad del Vaticano", capital: "Ciudad del Vaticano", continent: "Europa" },
-
-      // ASIA
-      { id: "004", name: "Afganistán", capital: "Kabul", continent: "Asia" },
-      { id: "682", name: "Arabia Saudita", capital: "Riad", continent: "Asia" },
-      { id: "051", name: "Armenia", capital: "Ereván", continent: "Asia" },
-      { id: "031", name: "Azerbaiyán", capital: "Bakú", continent: "Asia" },
-      { id: "048", name: "Baréin", capital: "Manama", continent: "Asia" },
-      { id: "050", name: "Bangladés", capital: "Daca", continent: "Asia" },
-      { id: "096", name: "Brunéi", capital: "Bandar Seri Begawan", continent: "Asia" },
-      { id: "064", name: "Bután", capital: "Timbu", continent: "Asia" },
-      { id: "116", name: "Camboya", capital: "Nom Pen", continent: "Asia" },
-      { id: "634", name: "Catar", capital: "Doha", continent: "Asia" },
+      { id: "032", name: "Argentina", capital: "Buenos Aires", continent: "América del Sur" },
+      { id: "036", name: "Australia", capital: "Canberra", continent: "Oceanía" },
+      { id: "076", name: "Brasil", capital: "Brasilia", continent: "América del Sur" },
+      { id: "124", name: "Canadá", capital: "Ottawa", continent: "América del Norte" },
+      { id: "152", name: "Chile", capital: "Santiago", continent: "América del Sur" },
       { id: "156", name: "China", capital: "Pekín", continent: "Asia" },
-      { id: "196", name: "Chipre", capital: "Nicosia", continent: "Asia" },
-      { id: "408", name: "Corea del Norte", capital: "Pionyang", continent: "Asia" },
-      { id: "410", name: "Corea del Sur", capital: "Seúl", continent: "Asia" },
-      { id: "784", name: "Emiratos Árabes Unidos", capital: "Abu Dabi", continent: "Asia" },
-      { id: "608", name: "Filipinas", capital: "Manila", continent: "Asia" },
-      { id: "268", name: "Georgia", capital: "Tiflis", continent: "Asia" },
+      { id: "170", name: "Colombia", capital: "Bogotá", continent: "América del Sur" },
+      { id: "276", name: "Alemania", capital: "Berlín", continent: "Europa" },
       { id: "356", name: "India", capital: "Nueva Delhi", continent: "Asia" },
-      { id: "360", name: "Indonesia", capital: "Yakarta", continent: "Asia" },
-      { id: "368", name: "Irak", capital: "Bagdad", continent: "Asia" },
-      { id: "364", name: "Irán", capital: "Teherán", continent: "Asia" },
-      { id: "376", name: "Israel", capital: "Jerusalén", continent: "Asia" },
+      { id: "380", name: "Italia", capital: "Roma", continent: "Europa" },
       { id: "392", name: "Japón", capital: "Tokio", continent: "Asia" },
-      { id: "400", name: "Jordania", capital: "Amán", continent: "Asia" },
-      { id: "398", name: "Kazajistán", capital: "Astaná", continent: "Asia" },
-      { id: "417", name: "Kirguistán", capital: "Biskek", continent: "Asia" },
-      { id: "414", name: "Kuwait", capital: "Kuwait", continent: "Asia" },
-      { id: "418", name: "Laos", capital: "Vientián", continent: "Asia" },
-      { id: "422", name: "Líbano", capital: "Beirut", continent: "Asia" },
-      { id: "458", name: "Malasia", capital: "Kuala Lumpur", continent: "Asia" },
-      { id: "462", name: "Maldivas", capital: "Malé", continent: "Asia" },
-      { id: "496", name: "Mongolia", capital: "Ulán Bator", continent: "Asia" },
-      { id: "104", name: "Myanmar", capital: "Naipyidó", continent: "Asia" },
-      { id: "524", name: "Nepal", capital: "Katmandú", continent: "Asia" },
-      { id: "512", name: "Omán", capital: "Mascate", continent: "Asia" },
-      { id
+      { id: "484", name: "México", capital: "Ciudad de México", continent: "América del Norte" },
+      { id: "604", name: "Perú", capital: "Lima", continent: "América del Sur" },
+      { id: "643", name: "Rusia", capital: "Moscú", continent: "Europa" },
+      { id: "724", name: "España", capital: "Madrid", continent: "Europa" },
+      { id: "826", name: "Reino Unido", capital: "Londres", continent: "Europa" },
+      { id: "840", name: "Estados Unidos", capital: "Washington D. C.", continent: "América del Norte" },
+      { id: "250", name: "Francia", capital: "París", continent: "Europa" },
+      { id: "710", name: "Sudáfrica", capital: "Pretoria", continent: "África" },
+      { id: "818", name: "Egipto", capital: "El Cairo", continent: "África" },
+      { id: "566", name: "Nigeria", capital: "Abuya", continent: "África" },
+      { id: "404", name: "Kenia", capital: "Nairobi", continent: "África" },
+      { id: "554", name: "Nueva Zelanda", capital: "Wellington", continent: "Oceanía" }
+    ];
+
+    const COUNTRY_BY_ID = new Map(COUNTRIES_DATA.map(c => [c.id, c]));
+    let availableCountries = [...COUNTRIES_DATA];
+
+    let countriesQueue = [];
+    let countriesSolved = new Set();
+    let currentCountryTarget = null;
+    let countriesLocked = false;
+
+    let currentContinent = "Europa";
+    let capitalsQueue = [];
+    let capitalsSolved = new Set();
+    let currentCapitalTarget = null;
+    let capitalsLocked = false;
+
+    const mapsState = {
+      countries: { containerId: 'map-countries', svg: null, g: null, path: null, zoom: null, width: 900, height: 460, mode: 'countries' },
+      capitals:  { containerId: 'map-capitals',  svg: null, g: null, path: null, zoom: null, width: 900, height: 460, mode: 'capitals' },
+      atlas:     { containerId: 'map-atlas',     svg: null, g: null, path: null, zoom: null, width: 900, height: 460, mode: 'atlas' }
+    };
+
+    function shuffle(arr) {
+      const copy = [...arr];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    function switchView(viewName) {
+      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+
+      const targetView = document.getElementById('view-' + viewName);
+      const targetBtn = document.getElementById('nav-' + viewName);
+      if (targetView) targetView.classList.add('active');
+      if (targetBtn) targetBtn.classList.add('active');
+
+      if (viewName === 'countries' && mapsState.countries.svg) {
+        setTimeout(() => resetZoom('countries'), 40);
+      } else if (viewName === 'capitals' && mapsState.capitals.svg) {
+        setTimeout(() => focusContinent(currentContinent), 40);
+      } else if (viewName === 'atlas' && mapsState.atlas.svg && typeof applyAtlasLayer === 'function') {
+        setTimeout(() => applyAtlasLayer(typeof currentAtlasLayer !== 'undefined' ? currentAtlasLayer : 'politico'), 40);
+      }
+    }
+
+    function buildMapInstance(stateObj, geoFeatures) {
+      const container = document.getElementById(stateObj.containerId);
+      if (!container || typeof d3 === 'undefined') return;
+
+      container.innerHTML = '';
+      const rect = container.getBoundingClientRect();
+      stateObj.width = Math.max(320, rect.width || 900);
+      stateObj.height = Math.max(260, rect.height || 460);
+
+      const svg = d3.select(container)
+        .append('svg')
+        .attr('viewBox', `0 0 ${stateObj.width} ${stateObj.height}`)
+        .attr('width', '100%')
+        .attr('height', '100%');
+
+      const g = svg.append('g');
+      const projection = d3.geoNaturalEarth1().fitSize([stateObj.width, stateObj.height], { type: 'FeatureCollection', features: geoFeatures });
+      const path = d3.geoPath().projection(projection);
+
+      const zoom = d3.zoom()
+        .scaleExtent([1, 8])
+        .on('zoom', (event) => {
+          g.attr('transform', event.transform);
+        });
+
+      svg.call(zoom);
+
+      g.selectAll('path.country-path')
+        .data(geoFeatures)
+        .enter()
+        .append('path')
+        .attr('class', 'country-path')
+        .attr('d', path)
+        .attr('data-iso', d => String(d.id || '').padStart(3, '0'))
+        .on('click', function(event, d) {
+          const iso = String(d.id || '').padStart(3, '0');
+          const sel = d3.select(this);
+          if (stateObj.mode === 'countries') handleCountryClick(iso, sel);
+          else if (stateObj.mode === 'capitals') handleCapitalClick(iso, sel);
+          else if (stateObj.mode === 'atlas' && typeof handleAtlasCountryClick === 'function') handleAtlasCountryClick(iso, sel);
+        });
+
+      stateObj.svg = svg;
+      stateObj.g = g;
+      stateObj.path = path;
+      stateObj.zoom = zoom;
+    }
+
+    function initMaps() {
+      initCookieBanner();
+
+      if (typeof d3 !== 'undefined' && typeof topojson !== 'undefined') {
+        d3.json('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json')
+          .then(world => {
+            const features = topojson.feature(world, world.objects.countries).features;
+            const worldIds = new Set(features.map(f => String(f.id || '').padStart(3, '0')));
+            const filtered = COUNTRIES_DATA.filter(c => worldIds.has(c.id));
+            if (filtered.length > 0) {
+              availableCountries = filtered;
+            }
+            buildMapInstance(mapsState.countries, features);
+            buildMapInstance(mapsState.capitals, features);
+            buildMapInstance(mapsState.atlas, features);
+
+            resetCountriesGame();
+            selectContinent(currentContinent);
+
+            if (typeof initGeoAtlasV2 === 'function') {
+              initGeoAtlasV2();
+            }
+          })
+          .catch(() => {
+            resetCountriesGame();
+            selectContinent(currentContinent);
+            if (typeof initGeoAtlasV2 === 'function') {
+              initGeoAtlasV2();
+            }
+          });
+      } else {
+        resetCountriesGame();
+        selectContinent(currentContinent);
+        if (typeof initGeoAtlasV2 === 'function') {
+          initGeoAtlasV2();
+        }
+      }
+    }
+
+    function zoomMap(mapKey, factor) {
+      const st = mapsState[mapKey];
+      if (!st || !st.svg || !st.zoom) return;
+      st.svg.transition().duration(250).call(st.zoom.scaleBy, factor);
+    }
+
+    function resetZoom(mapKey) {
+      const st = mapsState[mapKey];
+      if (!st || !st.svg || !st.zoom) return;
+      st.svg.transition().duration(300).call(st.zoom.transform, d3.zoomIdentity);
+    }
+
+    function locateHint(mode) {
+      if (mode === 'countries' && currentCountryTarget) {
+        const c = COUNTRY_BY_ID.get(currentCountryTarget.id);
+        setFeedback('country-feedback', `Pista: ${c ? c.name : ''} se encuentra en ${c ? c.continent : ''}.`, '');
+      } else if (mode === 'capitals' && currentCapitalTarget) {
+        setFeedback('capital-feedback', `Pista: la capital ${currentCapitalTarget.capital} pertenece a un país de ${currentContinent}.`, '');
+      }
+    }
+
+    function resetCountriesGame() {
+      countriesQueue = shuffle(availableCountries);
+      countriesSolved.clear();
+      countriesLocked = false;
+      const doneEl = document.getElementById('countries-complete');
+      if (doneEl) doneEl.classList.remove('visible');
+
+      if (mapsState.countries.g) {
+        mapsState.countries.g.selectAll('.country-path')
+          .classed('solved', false)
+          .classed('wrong-flash', false)
+          .classed('dimmed', false);
+      }
+      resetZoom('countries');
+      setFeedback('country-feedback', 'Pulsa sobre el país indicado en el mapa.', '');
+      nextCountryQuestion();
+    }
+
+    function nextCountryQuestion() {
+      const progEl = document.getElementById('country-progress');
+      const targetEl = document.getElementById('country-target-name');
+      if (progEl) progEl.textContent = `${countriesSolved.size} / ${availableCountries.length}`;
+
+      if (countriesQueue.length === 0) {
+        currentCountryTarget = null;
+        if (targetEl) targetEl.textContent = '¡Completado!';
+        const titleEl = document.getElementById('countries-complete-title');
+        const doneEl = document.getElementById('countries-complete');
+        if (titleEl) titleEl.textContent = '¡Has completado todos los países!';
+        if (doneEl) doneEl.classList.add('visible');
+        return;
+      }
+
+      currentCountryTarget = countriesQueue[0];
+      if (targetEl) targetEl.textContent = currentCountryTarget.name;
+    }
+
+    function handleCountryClick(iso, pathSelection) {
+      if (!currentCountryTarget || countriesLocked) return;
+
+      if (iso === currentCountryTarget.id) {
+        countriesLocked = true;
+        countriesSolved.add(iso);
+        countriesQueue.shift();
+        if (pathSelection) pathSelection.classed('solved', true);
+        setFeedback('country-feedback', `¡Correcto! Has encontrado ${currentCountryTarget.name}.`, 'correct');
+
+        setTimeout(() => {
+          countriesLocked = false;
+          setFeedback('country-feedback', 'Pulsa sobre el país indicado en el mapa.', '');
+          nextCountryQuestion();
+        }, 900);
+      } else {
+        const clickedInfo = COUNTRY_BY_ID.get(iso);
+        const clickedLabel = clickedInfo ? ` (has pulsado ${clickedInfo.name})` : '';
+        setFeedback('country-feedback', `Incorrecto${clickedLabel}. Vuelve a intentarlo.`, 'incorrect');
+        if (pathSelection) {
+          pathSelection.classed('wrong-flash', true);
+          setTimeout(() => pathSelection.classed('wrong-flash', false), 450);
+        }
+      }
+    }
+
+    function selectContinent(continent) {
+      currentContinent = continent;
+      document.querySelectorAll('.continent-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.continent === continent);
+      });
+      resetCapitalsGame();
+    }
+
+    function resetCapitalsGame() {
+      const continentCountries = availableCountries.filter(c => c.continent === currentContinent);
+      capitalsQueue = shuffle(continentCountries);
+      capitalsSolved.clear();
+      capitalsLocked = false;
+
+      const doneEl = document.getElementById('capitals-complete');
+      if (doneEl) doneEl.classList.remove('visible');
+
+      const continentIds = new Set(continentCountries.map(c => c.id));
+      if (mapsState.capitals.g) {
+        mapsState.capitals.g.selectAll('.country-path')
+          .classed('solved', false)
+          .classed('wrong-flash', false)
+          .classed('dimmed', d => !continentIds.has(String(d.id || '').padStart(3, '0')));
+      }
+
+      focusContinent(currentContinent);
+      setFeedback('capital-feedback', `Selecciona en el mapa el país de ${currentContinent} al que pertenece esta capital.`, '');
+      nextCapitalQuestion();
+    }
+
+    function focusContinent(continent) {
+      const st = mapsState.capitals;
+      if (!st || !st.svg || !st.zoom) return;
+
+      const presets = {
+        "Europa": { scale: 3.3, tx: -1.12, ty: -0.32 },
+        "Asia": { scale: 2.35, tx: -1.42, ty: -0.45 },
+        "África": { scale: 2.5, tx: -0.95, ty: -0.78 },
+        "América del Norte": { scale: 2.35, tx: -0.18, ty: -0.35 },
+        "América del Sur": { scale: 2.75, tx: -0.52, ty: -1.18 },
+        "Oceanía": { scale: 2.6, tx: -1.88, ty: -1.15 }
+      };
+
+      const p = presets[continent];
+      if (!p) {
+        resetZoom('capitals');
+        return;
+      }
+
+      const transform = d3.zoomIdentity
+        .translate(st.width * p.tx, st.height * p.ty)
+        .scale(p.scale);
+
+      st.svg.transition().duration(450).call(st.zoom.transform, transform);
+    }
+
+    function nextCapitalQuestion() {
+      const total = availableCountries.filter(c => c.continent === currentContinent).length;
+      const progEl = document.getElementById('capital-progress');
+      const targetEl = document.getElementById('capital-target-name');
+      if (progEl) progEl.textContent = `${capitalsSolved.size} / ${total}`;
+
+      if (capitalsQueue.length === 0) {
+        currentCapitalTarget = null;
+        if (targetEl) targetEl.textContent = `¡${currentContinent} completado!`;
+        const titleEl = document.getElementById('capitals-complete-title');
+        const doneEl = document.getElementById('capitals-complete');
+        if (titleEl) titleEl.textContent = `¡Has completado todas las capitales de ${currentContinent}!`;
+        if (doneEl) doneEl.classList.add('visible');
+        return;
+      }
+
+      currentCapitalTarget = capitalsQueue[0];
+      if (targetEl) targetEl.textContent = currentCapitalTarget.capital;
+    }
+
+    function handleCapitalClick(iso, pathSelection) {
+      if (!currentCapitalTarget || capitalsLocked) return;
+
+      if (iso === currentCapitalTarget.id) {
+        capitalsLocked = true;
+        capitalsSolved.add(iso);
+        capitalsQueue.shift();
+
+        if (pathSelection) pathSelection.classed('solved', true);
+        setFeedback(
+          'capital-feedback',
+          `¡Correcto! ${currentCapitalTarget.capital} es la capital de ${currentCapitalTarget.name}.`,
+          'correct'
+        );
+
+        setTimeout(() => {
+          capitalsLocked = false;
+          setFeedback('capital-feedback', `Selecciona en el mapa el país de ${currentContinent} al que pertenece esta capital.`, '');
+          nextCapitalQuestion();
+        }, 950);
+      } else {
+        const clickedInfo = COUNTRY_BY_ID.get(iso);
+        const clickedLabel = clickedInfo ? ` (has pulsado ${clickedInfo.name})` : '';
+        setFeedback('capital-feedback', `Incorrecto${clickedLabel}. Vuelve a intentarlo.`, 'incorrect');
+
+        if (pathSelection) {
+          pathSelection.classed('wrong-flash', true);
+          setTimeout(() => pathSelection.classed('wrong-flash', false), 450);
+        }
+      }
+    }
+
+    function setFeedback(elementId, message, statusClass) {
+      const el = document.getElementById(elementId);
+      if (!el) return;
+      el.className = 'feedback-banner' + (statusClass ? ' ' + statusClass : '');
+      el.innerHTML = `<span>${message}</span>`;
+    }
+
+    window.addEventListener('DOMContentLoaded', initMaps);
+  </script>
+
+  <script src="geoatlas-v2.js"></script>
+</body>
+</html>
