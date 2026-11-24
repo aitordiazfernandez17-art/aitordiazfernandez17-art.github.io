@@ -4,8 +4,22 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="google-site-verification" content="">
-  <meta name="description" content="Aprende geografía mundial jugando en GeoAtlas. Descubre países, capitales y mapas interactivos con juegos educativos, retos y actividades para explorar el mundo.">
-  <title>GeoAtlas - Juegos de Geografía Mundial, Países y Capitales</title>
+  <meta name="description" content="Aprende geografía mundial con juegos de geografía, juegos de capitales del mundo, juegos de países, juegos de banderas, fichas de países y mapas interactivos.">
+  <link rel="canonical" href="./">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="GeoAtlas — Juegos de Geografía, Capitales del Mundo, Países, Banderas y Mapas Interactivos">
+  <meta property="og:description" content="Aprende geografía mundial con juegos de geografía, juegos de capitales del mundo, juegos de países, juegos de banderas, fichas de países y mapas interactivos.">
+  <title>GeoAtlas — Juegos de Geografía, Capitales del Mundo, Países, Banderas y Mapas Interactivos</title>
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "GeoAtlas",
+      "applicationCategory": "EducationalApplication",
+      "inLanguage": "es",
+      "description": "Plataforma educativa para aprender geografía mundial mediante juegos de geografía, juegos de capitales del mundo, juegos de países, juegos de banderas, fichas de países y mapas interactivos."
+    }
+  </script>
 
   <!-- Google Consent Mode v2 (Denegado por defecto hasta aceptación explícita) + GA4 -->
   <script>
@@ -650,7 +664,7 @@
 
   <header>
     <div class="nav-container">
-      <a class="brand" onclick="switchView('home')" role="button" tabindex="0">
+      <a class="brand" href="#inicio" onclick="event.preventDefault(); switchView('home')" role="button" tabindex="0">
         <span class="brand-icon" aria-hidden="true">🌍</span>
         <span>GeoAtlas</span>
       </a>
@@ -671,10 +685,10 @@
     <section id="view-home" class="view active">
       <div class="hero">
         <span class="hero-badge">GeoAtlas 2.0 · Plataforma Educativa Integral de Geografía</span>
-        <h1>GeoAtlas: aprende geografía mundial jugando</h1>
+        <h1>GeoAtlas: Juegos de Geografía y Mapas Interactivos del Mundo</h1>
         <div class="hero-tagline">Explora el mundo. Aprende geografía. Descubre el planeta</div>
         <p>
-          Una plataforma educativa interactiva para estudiar la geografía física, política, humana y económica, explorar mapas temáticos, consultar fichas detalladas de países y poner a prueba tus conocimientos con juegos sobre el mapamundi y cuestionarios.
+          Una plataforma educativa para aprender geografía mundial con juegos de geografía, juegos de capitales del mundo, juegos de países y juegos de banderas, además de mapas interactivos de países, capas temáticas y fichas detalladas.
         </p>
         <div style="display:flex; flex-wrap:wrap; gap:0.75rem;">
           <button class="btn-primary" onclick="switchView('learn')">Explorar Aprende</button>
@@ -685,49 +699,49 @@
       </div>
 
       <div class="v2-section-heading">
-        <h2>Accesos rápidos a las secciones de GeoAtlas 2.0</h2>
-        <p>Navega directamente entre lecciones estructuradas, capas cartográficas, enciclopedia de países y retos interactivos.</p>
+        <h2>Accesos rápidos para aprender geografía mundial</h2>
+        <p>Accede a lecciones para aprender geografía mundial, mapas interactivos de países, enciclopedia de estados y juegos de geografía.</p>
       </div>
 
       <div class="v2-quick-grid">
         <article class="v2-info-card">
           <span class="v2-badge v2-badge-green">4 Categorías · 23 Temas</span>
-          <h3>Aprende Geografía</h3>
-          <p>Lecciones claras con ejemplos reales, distinción entre datos exactos y aproximados y minicuestionarios en Geografía Física, Política, Humana y Económica.</p>
+          <h3>Aprende Geografía Mundial</h3>
+          <p>Lecciones para aprender geografía mundial con ejemplos reales, distinción entre datos exactos y aproximados y minicuestionarios en Geografía Física, Política, Humana y Económica. <a href="?modo=learn" onclick="event.preventDefault(); switchView('learn')" style="color:var(--primary); font-weight:600; text-decoration:none;">Ver lecciones</a>.</p>
           <button class="btn-secondary" onclick="switchView('learn')">Ir a Aprende</button>
         </article>
         <article class="v2-info-card">
           <span class="v2-badge v2-badge-blue">8 Capas Temáticas</span>
-          <h3>Atlas Interactivo</h3>
-          <p>Visualiza mapas político, físico, de continentes, océanos, cordilleras, ríos, climas y densidad de población con leyenda y explicación geográfica.</p>
+          <h3>Atlas Interactivo y Mapas de Países</h3>
+          <p>Explora mapas interactivos de países y capas político, físico, de continentes, océanos, cordilleras, ríos, climas y densidad de población con leyenda. <a href="?modo=atlas" onclick="event.preventDefault(); switchView('atlas')" style="color:var(--primary); font-weight:600; text-decoration:none;">Explorar atlas</a>.</p>
           <button class="btn-secondary" onclick="switchView('atlas')">Ir al Atlas</button>
         </article>
         <article class="v2-info-card">
           <span class="v2-badge v2-badge-amber">Enciclopedia y Buscador</span>
-          <h3>Fichas de Países</h3>
-          <p>Consulta bandera, capital, continente, superficie, población aproximada con fecha de referencia, idiomas, moneda, relieve, clima y curiosidades.</p>
+          <h3>Fichas de Países y Banderas</h3>
+          <p>Consulta bandera, capital, continente, superficie, población aproximada con fecha de referencia, idiomas, moneda, relieve, clima y curiosidades. <a href="?modo=profiles" onclick="event.preventDefault(); switchView('profiles')" style="color:var(--primary); font-weight:600; text-decoration:none;">Abrir fichas</a>.</p>
           <button class="btn-secondary" onclick="switchView('profiles')">Ver Fichas</button>
         </article>
         <article class="v2-info-card">
           <span class="v2-badge v2-badge-teal">9 Juegos en Total</span>
-          <h3>Juegos y Desafíos</h3>
-          <p>Conserva Países del Mundo y Capitales por Continente e incorpora 7 nuevos juegos de banderas, ríos, cordilleras, océanos, ciudades, V/F y desafío mundial.</p>
+          <h3>Juegos de Geografía, Capitales y Banderas</h3>
+          <p>Incluye juegos de países y juegos de capitales del mundo sobre el mapa, además de juegos de banderas, ríos, cordilleras, océanos, ciudades, V/F y desafío mundial. <a href="?modo=games" onclick="event.preventDefault(); switchView('games')" style="color:var(--primary); font-weight:600; text-decoration:none;">Ver retos</a>.</p>
           <button class="btn-secondary" onclick="switchView('games')">Ver Todos los Juegos</button>
         </article>
       </div>
 
       <div class="v2-section-heading">
-        <h2>Juegos destacados</h2>
-        <p>Tus dos juegos clásicos sobre mapamundi intactos junto con los nuevos retos interactivos.</p>
+        <h2>Juegos de geografía destacados</h2>
+        <p>Juegos de países, juegos de capitales del mundo sobre mapas interactivos de países y juegos de banderas para practicar.</p>
       </div>
 
       <div class="cards-grid">
         <article class="game-card">
           <div>
-            <span class="game-card-tag">Clásico · Mapa Mundial Completo</span>
+            <span class="game-card-tag">Juegos de Países · Mapa Mundial</span>
             <h2>Países del Mundo</h2>
             <p>
-              Localiza directamente sobre el mapamundi interactivo cada país propuesto. Recorre todos los Estados del planeta sin repeticiones hasta completar la ronda.
+              Uno de los juegos de países más completos sobre mapas interactivos de países: localiza cada Estado en el mapamundi sin repeticiones hasta completar la ronda.
             </p>
           </div>
           <button class="btn-primary" onclick="switchView('countries')">Iniciar Países del Mundo</button>
@@ -735,10 +749,10 @@
 
         <article class="game-card">
           <div>
-            <span class="game-card-tag">Clásico · Por Continentes</span>
+            <span class="game-card-tag">Juegos de Capitales del Mundo · Por Continentes</span>
             <h2>Capitales por Continente</h2>
             <p>
-              Elige Europa, Asia, África, América del Norte, América del Sur u Oceanía, lee el nombre de la capital y pulsa sobre el país al que pertenece.
+              Practica juegos de capitales del mundo en Europa, Asia, África, América del Norte, América del Sur y Oceanía pulsando sobre cada país en el mapa.
             </p>
           </div>
           <button class="btn-primary" onclick="switchView('capitals')">Iniciar Capitales por Continente</button>
@@ -746,10 +760,10 @@
 
         <article class="game-card">
           <div>
-            <span class="game-card-tag">Novedad 2.0 · Banderas</span>
+            <span class="game-card-tag">Juegos de Banderas · Identificación</span>
             <h2>Adivina la Bandera</h2>
             <p>
-              Observa la bandera representada en pantalla, identifica a qué país corresponde entre cuatro opciones y revisa su capital y continente al responder.
+              Pon a prueba tu memoria en estos juegos de banderas: identifica el país correspondiente entre cuatro opciones y repasa su capital y continente.
             </p>
           </div>
           <button class="btn-primary" onclick="openSpecificNewGame('flags')">Jugar Adivina la Bandera</button>
@@ -889,8 +903,8 @@
         <div class="v2-section-top">
           <div>
             <span class="v2-badge v2-badge-green">Sección Educativa · Aprende</span>
-            <h1>Geografía Física, Política, Humana y Económica</h1>
-            <p>Selecciona una categoría y un tema para leer explicaciones detalladas, ejemplos, distinción de datos exactos/aproximados y responder su cuestionario.</p>
+            <h2>Aprender geografía mundial: Física, Política, Humana y Económica</h2>
+            <p>Selecciona una categoría y un tema para aprender geografía mundial con explicaciones detalladas, ejemplos, distinción de datos exactos y aproximados y minicuestionario.</p>
           </div>
           <button class="btn-secondary" onclick="switchView('home')">← Volver a Inicio</button>
         </div>
@@ -915,8 +929,8 @@
         <div class="v2-section-top">
           <div>
             <span class="v2-badge v2-badge-blue">Exploración Cartográfica · Atlas Interactivo</span>
-            <h1>Atlas Temático Mundial</h1>
-            <p>Cambia entre 8 capas temáticas sobre el mapa vectorial interactivo, haz zoom o selecciona un país para consultar su información.</p>
+            <h2>Atlas temático y mapas interactivos de países</h2>
+            <p>Explora mapas interactivos de países con 8 capas temáticas, haz zoom y selecciona cualquier territorio para consultar su capital y continente.</p>
           </div>
           <button class="btn-secondary" onclick="switchView('home')">← Volver a Inicio</button>
         </div>
@@ -954,7 +968,7 @@
         <div class="v2-section-top">
           <div>
             <span class="v2-badge v2-badge-amber">Enciclopedia Geográfica · Fichas de Países</span>
-            <h1>Fichas Detalladas de Países</h1>
+            <h2>Fichas de países, capitales y banderas</h2>
             <p>Filtra por continente o busca un país para consultar su bandera, capital, superficie, población aproximada, idiomas, moneda, relieve, clima y curiosidades.</p>
           </div>
           <button class="btn-secondary" onclick="switchView('home')">← Volver a Inicio</button>
@@ -984,8 +998,8 @@
         <div class="v2-section-top">
           <div>
             <span class="v2-badge v2-badge-teal">Revolución de los Juegos · 7 Nuevos Modos</span>
-            <h1>Nuevos Juegos de Geografía</h1>
-            <p>Además de <strong>Países del Mundo</strong> y <strong>Capitales por Continente</strong>, prueba 7 juegos interactivos con puntuación, explicación de respuestas y reinicio de partida.</p>
+            <h2>Juegos de geografía, banderas, ríos, cordilleras y ciudades</h2>
+            <p>Además de nuestros juegos de países (<strong>Países del Mundo</strong>) y juegos de capitales del mundo (<strong>Capitales por Continente</strong>), prueba juegos de banderas y retos interactivos con puntuación y explicación.</p>
           </div>
           <div style="display:flex; flex-wrap:wrap; gap:0.5rem;">
             <button class="btn-secondary" onclick="switchView('countries')">Ir a Países del Mundo</button>
@@ -1173,464 +1187,4 @@
       { id: "104", name: "Myanmar", capital: "Naipyidó", continent: "Asia" },
       { id: "524", name: "Nepal", capital: "Katmandú", continent: "Asia" },
       { id: "512", name: "Omán", capital: "Mascate", continent: "Asia" },
-      { id: "586", name: "Pakistán", capital: "Islamabad", continent: "Asia" },
-      { id: "275", name: "Palestina", capital: "Ramala", continent: "Asia" },
-      { id: "702", name: "Singapur", capital: "Singapur", continent: "Asia" },
-      { id: "760", name: "Siria", capital: "Damasco", continent: "Asia" },
-      { id: "144", name: "Sri Lanka", capital: "Sri Jayawardenapura Kotte", continent: "Asia" },
-      { id: "764", name: "Tailandia", capital: "Bangkok", continent: "Asia" },
-      { id: "158", name: "Taiwán", capital: "Taipéi", continent: "Asia" },
-      { id: "762", name: "Tayikistán", capital: "Dusambé", continent: "Asia" },
-      { id: "626", name: "Timor Oriental", capital: "Dili", continent: "Asia" },
-      { id: "795", name: "Turkmenistán", capital: "Asjabad", continent: "Asia" },
-      { id: "792", name: "Turquía", capital: "Ankara", continent: "Asia" },
-      { id: "860", name: "Uzbekistán", capital: "Taskent", continent: "Asia" },
-      { id: "704", name: "Vietnam", capital: "Hanói", continent: "Asia" },
-      { id: "887", name: "Yemen", capital: "Saná", continent: "Asia" },
-
-      // ÁFRICA
-      { id: "024", name: "Angola", capital: "Luanda", continent: "África" },
-      { id: "012", name: "Argelia", capital: "Argel", continent: "África" },
-      { id: "204", name: "Benín", capital: "Porto Novo", continent: "África" },
-      { id: "072", name: "Botsuana", capital: "Gaborone", continent: "África" },
-      { id: "854", name: "Burkina Faso", capital: "Uagadugú", continent: "África" },
-      { id: "108", name: "Burundi", capital: "Gitega", continent: "África" },
-      { id: "132", name: "Cabo Verde", capital: "Praia", continent: "África" },
-      { id: "120", name: "Camerún", capital: "Yaundé", continent: "África" },
-      { id: "148", name: "Chad", capital: "Yamena", continent: "África" },
-      { id: "174", name: "Comoras", capital: "Moroni", continent: "África" },
-      { id: "384", name: "Costa de Marfil", capital: "Yamusukro", continent: "África" },
-      { id: "818", name: "Egipto", capital: "El Cairo", continent: "África" },
-      { id: "232", name: "Eritrea", capital: "Asmara", continent: "África" },
-      { id: "748", name: "Esuatini", capital: "Mbabane", continent: "África" },
-      { id: "231", name: "Etiopía", capital: "Adís Abeba", continent: "África" },
-      { id: "266", name: "Gabón", capital: "Libreville", continent: "África" },
-      { id: "270", name: "Gambia", capital: "Banjul", continent: "África" },
-      { id: "288", name: "Ghana", capital: "Acra", continent: "África" },
-      { id: "324", name: "Guinea", capital: "Conakri", continent: "África" },
-      { id: "624", name: "Guinea-Bisáu", capital: "Bisáu", continent: "África" },
-      { id: "226", name: "Guinea Ecuatorial", capital: "Malabo", continent: "África" },
-      { id: "404", name: "Kenia", capital: "Nairobi", continent: "África" },
-      { id: "426", name: "Lesoto", capital: "Maseru", continent: "África" },
-      { id: "430", name: "Liberia", capital: "Monrovia", continent: "África" },
-      { id: "434", name: "Libia", capital: "Trípoli", continent: "África" },
-      { id: "450", name: "Madagascar", capital: "Antananarivo", continent: "África" },
-      { id: "454", name: "Malaui", capital: "Lilongüe", continent: "África" },
-      { id: "466", name: "Malí", capital: "Bamako", continent: "África" },
-      { id: "504", name: "Marruecos", capital: "Rabat", continent: "África" },
-      { id: "480", name: "Mauricio", capital: "Port Louis", continent: "África" },
-      { id: "478", name: "Mauritania", capital: "Nuakchot", continent: "África" },
-      { id: "508", name: "Mozambique", capital: "Maputo", continent: "África" },
-      { id: "516", name: "Namibia", capital: "Windhoek", continent: "África" },
-      { id: "562", name: "Níger", capital: "Niamey", continent: "África" },
-      { id: "566", name: "Nigeria", capital: "Abuya", continent: "África" },
-      { id: "140", name: "República Centroafricana", capital: "Bangui", continent: "África" },
-      { id: "178", name: "República del Congo", capital: "Brazzaville", continent: "África" },
-      { id: "180", name: "República Democrática del Congo", capital: "Kinsasa", continent: "África" },
-      { id: "646", name: "Ruanda", capital: "Kigali", continent: "África" },
-      { id: "678", name: "Santo Tomé y Príncipe", capital: "Santo Tomé", continent: "África" },
-      { id: "686", name: "Senegal", capital: "Dakar", continent: "África" },
-      { id: "690", name: "Seychelles", capital: "Victoria", continent: "África" },
-      { id: "694", name: "Sierra Leona", capital: "Freetown", continent: "África" },
-      { id: "706", name: "Somalia", capital: "Mogadiscio", continent: "África" },
-      { id: "710", name: "Sudáfrica", capital: "Pretoria", continent: "África" },
-      { id: "729", name: "Sudán", capital: "Jartum", continent: "África" },
-      { id: "728", name: "Sudán del Sur", capital: "Yuba", continent: "África" },
-      { id: "834", name: "Tanzania", capital: "Dodoma", continent: "África" },
-      { id: "768", name: "Togo", capital: "Lomé", continent: "África" },
-      { id: "788", name: "Túnez", capital: "Túnez", continent: "África" },
-      { id: "800", name: "Uganda", capital: "Kampala", continent: "África" },
-      { id: "262", name: "Yibuti", capital: "Yibuti", continent: "África" },
-      { id: "894", name: "Zambia", capital: "Lusaka", continent: "África" },
-      { id: "716", name: "Zimbabue", capital: "Harare", continent: "África" },
-
-      // AMÉRICA DEL NORTE (incluye América Central y Caribe según división continental de 6 continentes)
-      { id: "028", name: "Antigua y Barbuda", capital: "Saint John", continent: "América del Norte" },
-      { id: "044", name: "Bahamas", capital: "Nasáu", continent: "América del Norte" },
-      { id: "052", name: "Barbados", capital: "Bridgetown", continent: "América del Norte" },
-      { id: "084", name: "Belice", capital: "Belmopán", continent: "América del Norte" },
-      { id: "124", name: "Canadá", capital: "Ottawa", continent: "América del Norte" },
-      { id: "188", name: "Costa Rica", capital: "San José", continent: "América del Norte" },
-      { id: "192", name: "Cuba", capital: "La Habana", continent: "América del Norte" },
-      { id: "212", name: "Dominica", capital: "Roseau", continent: "América del Norte" },
-      { id: "222", name: "El Salvador", capital: "San Salvador", continent: "América del Norte" },
-      { id: "840", name: "Estados Unidos", capital: "Washington D. C.", continent: "América del Norte" },
-      { id: "308", name: "Granada", capital: "Saint George", continent: "América del Norte" },
-      { id: "320", name: "Guatemala", capital: "Ciudad de Guatemala", continent: "América del Norte" },
-      { id: "332", name: "Haití", capital: "Puerto Príncipe", continent: "América del Norte" },
-      { id: "340", name: "Honduras", capital: "Tegucigalpa", continent: "América del Norte" },
-      { id: "388", name: "Jamaica", capital: "Kingston", continent: "América del Norte" },
-      { id: "484", name: "México", capital: "Ciudad de México", continent: "América del Norte" },
-      { id: "558", name: "Nicaragua", capital: "Managua", continent: "América del Norte" },
-      { id: "591", name: "Panamá", capital: "Ciudad de Panamá", continent: "América del Norte" },
-      { id: "214", name: "República Dominicana", capital: "Santo Domingo", continent: "América del Norte" },
-      { id: "659", name: "San Cristóbal y Nieves", capital: "Basseterre", continent: "América del Norte" },
-      { id: "670", name: "San Vicente y las Granadinas", capital: "Kingstown", continent: "América del Norte" },
-      { id: "662", name: "Santa Lucía", capital: "Castries", continent: "América del Norte" },
-      { id: "780", name: "Trinidad y Tobago", capital: "Puerto España", continent: "América del Norte" },
-
-      // AMÉRICA DEL SUR
-      { id: "032", name: "Argentina", capital: "Buenos Aires", continent: "América del Sur" },
-      { id: "068", name: "Bolivia", capital: "Sucre", continent: "América del Sur" },
-      { id: "076", name: "Brasil", capital: "Brasilia", continent: "América del Sur" },
-      { id: "152", name: "Chile", capital: "Santiago", continent: "América del Sur" },
-      { id: "170", name: "Colombia", capital: "Bogotá", continent: "América del Sur" },
-      { id: "218", name: "Ecuador", capital: "Quito", continent: "América del Sur" },
-      { id: "328", name: "Guyana", capital: "Georgetown", continent: "América del Sur" },
-      { id: "600", name: "Paraguay", capital: "Asunción", continent: "América del Sur" },
-      { id: "604", name: "Perú", capital: "Lima", continent: "América del Sur" },
-      { id: "740", name: "Surinam", capital: "Paramaribo", continent: "América del Sur" },
-      { id: "858", name: "Uruguay", capital: "Montevideo", continent: "América del Sur" },
-      { id: "862", name: "Venezuela", capital: "Caracas", continent: "América del Sur" },
-
-      // OCEANÍA
-      { id: "036", name: "Australia", capital: "Canberra", continent: "Oceanía" },
-      { id: "242", name: "Fiyi", capital: "Suva", continent: "Oceanía" },
-      { id: "584", name: "Islas Marshall", capital: "Majuro", continent: "Oceanía" },
-      { id: "090", name: "Islas Salomón", capital: "Honiara", continent: "Oceanía" },
-      { id: "296", name: "Kiribati", capital: "Tarawa Sur", continent: "Oceanía" },
-      { id: "583", name: "Micronesia", capital: "Palikir", continent: "Oceanía" },
-      { id: "520", name: "Nauru", capital: "Yaren", continent: "Oceanía" },
-      { id: "554", name: "Nueva Zelanda", capital: "Wellington", continent: "Oceanía" },
-      { id: "585", name: "Palaos", capital: "Ngerulmud", continent: "Oceanía" },
-      { id: "598", name: "Papúa Nueva Guinea", capital: "Port Moresby", continent: "Oceanía" },
-      { id: "882", name: "Samoa", capital: "Apia", continent: "Oceanía" },
-      { id: "776", name: "Tonga", capital: "Nukualofa", continent: "Oceanía" },
-      { id: "798", name: "Tuvalu", capital: "Funafuti", continent: "Oceanía" },
-      { id: "548", name: "Vanuatu", capital: "Port Vila", continent: "Oceanía" }
-    ];
-
-    const COUNTRY_BY_ID = new Map(COUNTRIES_DATA.map(c => [c.id, c]));
-
-    /* =========================================================================
-       3. ESTADO DE LOS MAPAS Y LÓGICA DE AMBOS JUEGOS ORIGINALES
-       ========================================================================= */
-    let worldGeoFeatures = [];
-    let availableCountries = [];
-    const mapsState = {
-      countries: { svg: null, g: null, zoom: null, pathGen: null },
-      capitals: { svg: null, g: null, zoom: null, pathGen: null },
-      atlas: { svg: null, g: null, zoom: null, pathGen: null }
-    };
-
-    // Estado Juego 1: Países del Mundo
-    let countriesQueue = [];
-    let countriesSolved = new Set();
-    let currentCountryTarget = null;
-    let countriesLocked = false;
-
-    // Estado Juego 2: Capitales por Continente
-    let currentContinent = "Europa";
-    let capitalsQueue = [];
-    let capitalsSolved = new Set();
-    let currentCapitalTarget = null;
-    let capitalsLocked = false;
-
-    function shuffle(array) {
-      const arr = array.slice();
-      for (let i = arr.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [arr[i], arr[j]] = [arr[j], arr[i]];
-      }
-      return arr;
-    }
-
-    function switchView(viewName) {
-      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-
-      const targetView = document.getElementById('view-' + viewName);
-      const targetBtn = document.getElementById('nav-' + viewName);
-      if (targetView) targetView.classList.add('active');
-      if (targetBtn) targetBtn.classList.add('active');
-
-      if (viewName === 'countries' && mapsState.countries.svg) {
-        setTimeout(() => resetZoom('countries'), 40);
-      } else if (viewName === 'capitals' && mapsState.capitals.svg) {
-        setTimeout(() => focusContinent(currentContinent), 40);
-      } else if (viewName === 'atlas' && mapsState.atlas.svg) {
-        setTimeout(() => applyAtlasLayer(currentAtlasLayer), 40);
-      }
-    }
-
-    async function initMaps() {
-      try {
-        const response = await fetch("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json");
-        const topology = await response.json();
-        const geo = topojson.feature(topology, topology.objects.countries);
-
-        worldGeoFeatures = geo.features.filter(f => f.id !== "010");
-        const presentIds = new Set(worldGeoFeatures.map(f => String(f.id).padStart(3, "0")));
-        availableCountries = COUNTRIES_DATA.filter(c => presentIds.has(c.id));
-
-        buildMapInstance('countries', handleCountryClick);
-        buildMapInstance('capitals', handleCapitalClick);
-        buildMapInstance('atlas', handleAtlasCountryClick);
-
-        document.getElementById('loading-countries').style.display = 'none';
-        document.getElementById('loading-capitals').style.display = 'none';
-        document.getElementById('loading-atlas').style.display = 'none';
-
-        resetCountriesGame();
-        resetCapitalsGame();
-        if (typeof initGeoAtlasV2 === 'function') {
-          initGeoAtlasV2();
-        }
-
-        const params = new URLSearchParams(window.location.search);
-        const mode = params.get('modo');
-        if (mode === 'countries' || mode === 'capitals' || mode === 'learn' || mode === 'atlas' || mode === 'profiles' || mode === 'games') {
-          switchView(mode);
-        }
-      } catch (err) {
-        document.getElementById('loading-countries').textContent = "Error al cargar el mapa. Comprueba tu conexión a Internet.";
-        document.getElementById('loading-capitals').textContent = "Error al cargar el mapa. Comprueba tu conexión a Internet.";
-        document.getElementById('loading-atlas').textContent = "Error al cargar el mapa. Comprueba tu conexión a Internet.";
-      }
-    }
-
-    function buildMapInstance(mode, clickHandler) {
-      const container = document.getElementById('map-wrapper-' + mode);
-      const width = container.clientWidth || 960;
-      const height = container.clientHeight || 520;
-
-      const svg = d3.select('#svg-' + mode)
-        .attr('viewBox', `0 0 ${width} ${height}`)
-        .attr('preserveAspectRatio', 'xMidYMid meet');
-
-      const projection = d3.geoNaturalEarth1()
-        .scale(width / 5.6)
-        .translate([width / 2, height / 1.9]);
-
-      const pathGen = d3.geoPath().projection(projection);
-      const g = svg.append('g');
-
-      g.selectAll('path')
-        .data(worldGeoFeatures)
-        .enter()
-        .append('path')
-        .attr('class', 'country-path')
-        .attr('d', pathGen)
-        .attr('data-iso', d => String(d.id).padStart(3, "0"))
-        .on('click', function(event, d) {
-          if (event.defaultPrevented) return;
-          const iso = String(d.id).padStart(3, "0");
-          clickHandler(iso, d3.select(this));
-        });
-
-      const zoom = d3.zoom()
-        .scaleExtent([1, 18])
-        .on('zoom', (event) => {
-          g.attr('transform', event.transform);
-        });
-
-      svg.call(zoom);
-      mapsState[mode] = { svg, g, zoom, pathGen, width, height };
-    }
-
-    function zoomMap(mode, factor) {
-      const st = mapsState[mode];
-      if (!st || !st.svg) return;
-      st.svg.transition().duration(260).call(st.zoom.scaleBy, factor);
-    }
-
-    function resetZoom(mode) {
-      const st = mapsState[mode];
-      if (!st || !st.svg) return;
-      st.svg.transition().duration(350).call(st.zoom.transform, d3.zoomIdentity);
-    }
-
-    function locateHint(mode) {
-      const target = mode === 'countries' ? currentCountryTarget : currentCapitalTarget;
-      if (!target) return;
-      const st = mapsState[mode];
-      const feature = worldGeoFeatures.find(f => String(f.id).padStart(3, "0") === target.id);
-      if (!feature || !st.pathGen) return;
-
-      const bounds = st.pathGen.bounds(feature);
-      const dx = Math.max(bounds[1][0] - bounds[0][0], 18);
-      const dy = Math.max(bounds[1][1] - bounds[0][1], 18);
-      const x = (bounds[0][0] + bounds[1][0]) / 2;
-      const y = (bounds[0][1] + bounds[1][1]) / 2;
-      const scale = Math.max(2.5, Math.min(9, 0.35 / Math.max(dx / st.width, dy / st.height)));
-      const translate = [st.width / 2 - scale * x, st.height / 2 - scale * y];
-
-      st.svg.transition().duration(500).call(
-        st.zoom.transform,
-        d3.zoomIdentity.translate(translate[0], translate[1]).scale(scale)
-      );
-    }
-
-    /* ----- JUEGO 1: PAÍSES DEL MUNDO ----- */
-    function resetCountriesGame() {
-      countriesQueue = shuffle(availableCountries);
-      countriesSolved.clear();
-      countriesLocked = false;
-
-      document.getElementById('countries-complete').classList.remove('visible');
-      if (mapsState.countries.g) {
-        mapsState.countries.g.selectAll('.country-path')
-          .classed('solved', false)
-          .classed('wrong-flash', false);
-      }
-
-      setFeedback('country-feedback', 'Pulsa directamente sobre el país correspondiente en el mapa.', '');
-      nextCountryQuestion();
-    }
-
-    function nextCountryQuestion() {
-      const total = availableCountries.length;
-      document.getElementById('country-progress').textContent = `${countriesSolved.size} / ${total}`;
-
-      if (countriesQueue.length === 0) {
-        currentCountryTarget = null;
-        document.getElementById('country-target-name').textContent = "¡Ronda completada!";
-        document.getElementById('countries-complete').classList.add('visible');
-        return;
-      }
-
-      currentCountryTarget = countriesQueue[0];
-      document.getElementById('country-target-name').textContent = currentCountryTarget.name;
-    }
-
-    function handleCountryClick(iso, pathSelection) {
-      if (!currentCountryTarget || countriesLocked) return;
-
-      if (iso === currentCountryTarget.id) {
-        countriesLocked = true;
-        countriesSolved.add(iso);
-        countriesQueue.shift();
-
-        pathSelection.classed('solved', true);
-        setFeedback('country-feedback', `¡Correcto! Has localizado ${currentCountryTarget.name}.`, 'correct');
-
-        setTimeout(() => {
-          countriesLocked = false;
-          setFeedback('country-feedback', 'Pulsa directamente sobre el país correspondiente en el mapa.', '');
-          nextCountryQuestion();
-        }, 850);
-      } else {
-        const clickedInfo = COUNTRY_BY_ID.get(iso);
-        const clickedLabel = clickedInfo ? ` (has pulsado ${clickedInfo.name})` : '';
-        setFeedback('country-feedback', `Incorrecto${clickedLabel}. Vuelve a intentarlo.`, 'incorrect');
-
-        pathSelection.classed('wrong-flash', true);
-        setTimeout(() => pathSelection.classed('wrong-flash', false), 450);
-      }
-    }
-
-    /* ----- JUEGO 2: CAPITALES POR CONTINENTE ----- */
-    function selectContinent(continent) {
-      currentContinent = continent;
-      document.querySelectorAll('.continent-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.continent === continent);
-      });
-      resetCapitalsGame();
-    }
-
-    function resetCapitalsGame() {
-      const continentCountries = availableCountries.filter(c => c.continent === currentContinent);
-      capitalsQueue = shuffle(continentCountries);
-      capitalsSolved.clear();
-      capitalsLocked = false;
-
-      document.getElementById('capitals-complete').classList.remove('visible');
-
-      const continentIds = new Set(continentCountries.map(c => c.id));
-      if (mapsState.capitals.g) {
-        mapsState.capitals.g.selectAll('.country-path')
-          .classed('solved', false)
-          .classed('wrong-flash', false)
-          .classed('dimmed', d => !continentIds.has(String(d.id).padStart(3, "0")));
-      }
-
-      focusContinent(currentContinent);
-      setFeedback('capital-feedback', `Selecciona en el mapa el país de ${currentContinent} al que pertenece esta capital.`, '');
-      nextCapitalQuestion();
-    }
-
-    function focusContinent(continent) {
-      const st = mapsState.capitals;
-      if (!st || !st.svg) return;
-
-      const presets = {
-        "Europa": { scale: 3.3, tx: -1.12, ty: -0.32 },
-        "Asia": { scale: 2.35, tx: -1.42, ty: -0.45 },
-        "África": { scale: 2.5, tx: -0.95, ty: -0.78 },
-        "América del Norte": { scale: 2.35, tx: -0.18, ty: -0.35 },
-        "América del Sur": { scale: 2.75, tx: -0.52, ty: -1.18 },
-        "Oceanía": { scale: 2.6, tx: -1.88, ty: -1.15 }
-      };
-
-      const p = presets[continent];
-      if (!p) {
-        resetZoom('capitals');
-        return;
-      }
-
-      const transform = d3.zoomIdentity
-        .translate(st.width * p.tx, st.height * p.ty)
-        .scale(p.scale);
-
-      st.svg.transition().duration(450).call(st.zoom.transform, transform);
-    }
-
-    function nextCapitalQuestion() {
-      const total = availableCountries.filter(c => c.continent === currentContinent).length;
-      document.getElementById('capital-progress').textContent = `${capitalsSolved.size} / ${total}`;
-
-      if (capitalsQueue.length === 0) {
-        currentCapitalTarget = null;
-        document.getElementById('capital-target-name').textContent = `¡${currentContinent} completado!`;
-        document.getElementById('capitals-complete-title').textContent = `¡Has completado todas las capitales de ${currentContinent}!`;
-        document.getElementById('capitals-complete').classList.add('visible');
-        return;
-      }
-
-      currentCapitalTarget = capitalsQueue[0];
-      document.getElementById('capital-target-name').textContent = currentCapitalTarget.capital;
-    }
-
-    function handleCapitalClick(iso, pathSelection) {
-      if (!currentCapitalTarget || capitalsLocked) return;
-
-      if (iso === currentCapitalTarget.id) {
-        capitalsLocked = true;
-        capitalsSolved.add(iso);
-        capitalsQueue.shift();
-
-        pathSelection.classed('solved', true);
-        setFeedback(
-          'capital-feedback',
-          `¡Correcto! ${currentCapitalTarget.capital} es la capital de ${currentCapitalTarget.name}.`,
-          'correct'
-        );
-
-        setTimeout(() => {
-          capitalsLocked = false;
-          setFeedback('capital-feedback', `Selecciona en el mapa el país de ${currentContinent} al que pertenece esta capital.`, '');
-          nextCapitalQuestion();
-        }, 950);
-      } else {
-        const clickedInfo = COUNTRY_BY_ID.get(iso);
-        const clickedLabel = clickedInfo ? ` (has pulsado ${clickedInfo.name})` : '';
-        setFeedback('capital-feedback', `Incorrecto${clickedLabel}. Vuelve a intentarlo.`, 'incorrect');
-
-        pathSelection.classed('wrong-flash', true);
-        setTimeout(() => pathSelection.classed('wrong-flash', false), 450);
-      }
-    }
-
-    function setFeedback(elementId, message, statusClass) {
-      const el = document.getElementById(elementId);
-      el.className = 'feedback-banner' + (statusClass ? ' ' + statusClass : '');
-      el.innerHTML = `<span>${message}</span>`;
-    }
-
-    window.addEventListener('DOMContentLoaded', initMaps);
-  </script>
-
-  <!-- Lógica modular de GeoAtlas 2.0 -->
-  <script src="geoatlas-v2.js"></script>
-</body>
-</html>
+      { id
