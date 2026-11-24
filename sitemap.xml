@@ -1,6 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://aitordiazfernandez17-art.github.io/geoatlas/</loc>
+    <loc>https://aitordiazfernandez17-art.github.io/</loc>
+  </url>
+  <url>
+    <loc>https://aitordiazfernandez17-art.github.io/contacto_geoatlas.html</loc>
+  </url>
+  <url>
+    <loc>https://aitordiazfernandez17-art.github.io/pol_tica_de_privacidad_geoatlas.html</loc>
+  </url>
+  <url>
+    <loc>https://aitordiazfernandez17-art.github.io/pol_tica_de_cookies_geoatlas.html</loc>
   </url>
 </urlset>
+
